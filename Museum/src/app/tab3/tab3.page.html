@@ -1,0 +1,32 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+  <ion-title>
+Feedback
+  </ion-title>
+  </ion-toolbar>
+  <ion-title style="color: #fece2f;font-weight: bold;font-size: 22px;margin-left: 20px;margin-top: 20px; margin-bottom: 20px;" class="fname">Let us know what you think!</ion-title>
+<ion-card style="border-radius: 15px;">
+<ion-card-content>
+  <ion-item>
+      <ion-input class="ion-margin ion-padding" label="Enter your Name: " placeholder="Enter text" class="input" style="margin-left: 10px;margin-top: 20px;"></ion-input>
+  </ion-item>
+  <ion-item>
+      <ion-input class="ion-margin ion-padding" label="Enter your Number: " type="number" placeholder="000"></ion-input>
+  </ion-item>
+  <ion-item>
+      <ion-input class="ion-margin ion-padding" label="Enter your Password: " type="password" value="password"></ion-input>
+  </ion-item>
+  <ion-item>
+      <ion-input class="ion-margin ion-padding" label="Enter your Email: " type="email"
+          placeholder="email@domain.com"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="stacked" style="font-size: 20px;margin-left: 10px;margin-top: 10px;">Message</ion-label>
+    <ion-textarea rows="4" placeholder="Enter your message here..." style="margin-left: 10px;"></ion-textarea>
+  </ion-item>
+  <ion-button class="ion-margin ion-padding" style="color:#fece2f"
+      id="present-alert">Submit</ion-button>
+  <ion-alert trigger="present-alert" header="Alert" message="Are you sure?"
+      [buttons]="alertButtons"></ion-alert>
+</ion-card-content>
+</ion-card>

@@ -1,0 +1,13 @@
+.semi-circle {
+    width: 150px; /* Adjust the width as needed */
+    height: 150px; /* Adjust the height as needed */
+    overflow: hidden;
+    border-radius: 500px 500px 0 0; /* Adjust the border-radius to maintain the semi-circle shape */
+  }
+  
+  .semi-circle ion-img {
+    display: block;
+    width: 150px; /* Adjust the width as needed */
+    height: 150px; /* Adjust the height as needed */
+  }
+  

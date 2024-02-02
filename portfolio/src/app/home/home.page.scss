@@ -1,0 +1,60 @@
+#container {
+  text-align: center;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  }
+  #container strong {
+  font-size: 20px;
+  line-height: 26px;
+  }
+  #container p {
+  font-size: 16px;
+  line-height: 22px;
+  color: #8c8c8c;
+  margin: 0;
+  }
+  #container a {
+  text-decoration: none;
+  }
+  img.pfp {
+  max-width: 8rem !important;
+  max-height: 8rem !important;
+  }
+  ion-card.first-card{
+  margin-top: 50px;
+  }
+  .fname{
+  font-size: 1.8rem;
+  }
+  .job-role{
+  font-size: 1.2rem;
+  }
+  .div2{
+  padding-left: 80px;
+  justify-content: left;
+  }
+  .logo-grid{
+  max-width: 50%;
+  }
+  .gallery {
+  background: #EEE;
+  }
+  .gallery-cell {
+  width: 66%;
+  height: 200px;
+  margin-right: 10px;
+  background: #8C8;
+  counter-increment: gallery-cell;
+  }
+  /* cell number */
+  .gallery-cell:before {
+  display: block;
+  text-align: center;
+  content: counter(gallery-cell);
+  line-height: 200px;
+  font-size: 80px;
+  color: white;
+  }

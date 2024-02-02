@@ -1,0 +1,117 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+  <ion-title>
+  Events
+  </ion-title>
+  </ion-toolbar>
+  </ion-header>
+  <ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+  <ion-toolbar>
+  <ion-title size="large">Exhibit</ion-title>
+  </ion-toolbar>
+  </ion-header>
+  <div class="carousel">
+      <h1 style="color: #fece2f;font-weight: bold;font-size: 22px;margin-left: 20px;margin-top: 20px;" class="fname">Kid's Interest</h1>
+    <ion-row>
+      <ion-col size="6" size-md="3">
+        <ion-card>
+          <ion-img [src]="'https://media.mutualart.com/Images/2022_05/21/21/213644477/70fa8141-97ee-4890-a8b7-5e375bf80047_570.Jpeg'"></ion-img>
+          <ion-card-header>
+            <ion-card-title>The Starry Night</ion-card-title>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+    
+      <ion-col size="6" size-md="3">
+        <ion-card>
+          <ion-img [src]="'https://i.pinimg.com/originals/da/42/02/da4202a9e355b5c00761ec81f238a38f.jpg'" (click)="navigateToDetailsPage()"></ion-img>
+          <ion-card-header>
+            <ion-card-title>Innovations</ion-card-title>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  
+    <ion-row>
+      <ion-col size="6" size-md="3">
+        <ion-card>
+          <ion-img [src]="'https://www.mumwhatelse.com/wp-content/uploads/2016/12/natural-history-museum-london-with-kids-7-1440x960.jpg'"></ion-img>
+          <ion-card-header>
+            <ion-card-title>Dinosaurs!</ion-card-title>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+    
+      <ion-col size="6" size-md="3">
+        <ion-card>
+          <ion-img [src]="'https://media.cntraveler.com/photos/5a7746e0aeb19b5730310bf7/16:9/w_1600,c_limit/Museum-of-Natural-History_AMNHD.-Finnin_2018_4.-Afr.jpg'"(click)="navigateToDetailsPage()"></ion-img>
+          <ion-card-header>
+            <ion-card-title>Evolution of Animals</ion-card-title>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </div>
+  
+   
+  <!-- Kids Art card -->
+  <ion-card style="padding: 20px;">
+  <!-- card Title -->
+  <ion-title style=" font-size: 32px; text-align: center; color: #fece2f; margin-bottom:
+  20px; font-size: 25px;">
+  Collections and Artifacts
+  </ion-title>
+  <!-- Introduction Panel -->
+  <ion-card style="border-radius: 20px; overflow: hidden; box-shadow: 0px 0px 20px 0px
+  rgba(0, 0, 0, 0.1);">
+  <ion-card-content style="padding: 20px; text-align: center; background-color: #fff;">
+  <p style="font-size: 14px; color: #555;">
+    <a href="https://www.shutterstock.com/search/indian-museum">
+    <ion-img src="https://images.travelandleisureasia.com/wp-content/uploads/sites/2/2020/06/Feature-image-1.jpg?tr=w-480,f-jpg,pr-true"></ion-img>
+  </a>
+  Welcome to a magical journey into the world of art! Let's explore artistic
+  concepts and essential elements of
+  art history together. Get ready to unleash your creativity and discover the joy of
+  artistic expression.
+
+  </p>
+  </ion-card-content>
+  </ion-card>
+  <!-- Interactive Panels -->
+  <ion-grid style="margin-top: 20px;">
+  <!-- Panel 1: Colors and Imagination -->
+  <ion-row
+  style="background-color: #fff; border-radius: 20px; box-shadow: 0px 0px 20px 0px
+  rgba(0, 0, 0, 0.1); margin-bottom: 20px;">
+  <ion-col size="12" size-md="5" style="padding: 20px;">
+  <ion-title style="font-size: 20px; color: #333; margin-bottom: 10px; margin-left:
+  -20px;">
+  Lord of Dance 'Siva Nataraja' at National Museum, Delhi <ion-badge color="success" style="margin: -5px 5px
+  ;">Interactive</ion-badge>
+  </ion-title>
+  <p style="font-size: 14px; color: #555;">
+    <a href="https://cmsadmin.amritmahotsav.nic.in/blogdetail.htm?62">
+      <ion-img src="https://cmsadmin.amritmahotsav.nic.in/writereaddata/Portal/Images/Thanjavur-001.png"></ion-img>
+    </a>
+    Explore the magical world of colors and let your imagination run wild. Learn how artists use colors to convey emotions and tell stories. Click on the interactive color wheel to discover the endless possibilities.
+  </p>
+  <a href="https://www.shutterstock.com/search/indian-museum">
+  <ion-button fill="solid" size="small" style="margin-top:
+  10px;background-color: #fece2f;">Explore Now</ion-button></a>
+  </ion-col>
+  <ion-col size="12" size-md="7" style="padding: 0;">
+  <ion-img src="assets/15.jpg" style="width: 100%; height: 100%; border-radius: 0
+  20px 20px 0;"></ion-img>
+  </ion-col>
+  </ion-row>
+  <!-- Panel 2: Art Through Ages -->
+  <ion-row
+  style="background-color: #fff; border-radius: 20px; box-shadow: 0px 0px 20px 0px
+  rgba(0, 0, 0, 0.1); margin-bottom: 20px;">
+ 
+  </ion-row>
+  </ion-grid>
+  </ion-card>
+  <app-explore-container name="Exhibit page"></app-explore-container>
+  </ion-content>
