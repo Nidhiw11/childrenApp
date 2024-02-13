@@ -1,0 +1,81 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>FEEDBACK</ion-title>
+    </ion-toolbar>
+    </ion-header>
+    <ion-content [fullscreen]="true">
+    <ion-header collapse="condense">
+    <ion-toolbar>
+    <ion-title size="large">FEEDBACK</ion-title>
+    </ion-toolbar>
+    </ion-header>
+    <!-- Introduction to Rating Faculty -->
+    <ion-card>
+    <ion-card-content>
+    <ion-card-title size="large">Ratings</ion-card-title>
+    <ion-card-subtitle>We appreciate your Feedback</ion-card-subtitle>
+    </ion-card-content>
+    </ion-card>
+    <!-- Faculty Feedback Form -->
+    <ion-card class="faculty-feedback-card" *ngFor="let faculty of
+    faculties">
+    <ion-card-header style="text-align: center;">
+    <ion-grid>
+    <ion-row>
+    <!-- Column for faculty photo -->
+    <ion-col size="4">
+    <img src="{{ faculty.photo }}" alt="{{ faculty.name }}"
+    style="border-radius: 50%; max-width: 100px; max-height: 100px;">
+    </ion-col>
+    <!-- Column for faculty subtitle -->
+    <ion-col size="8">
+    <ion-card-subtitle>
+    <h4>Prof:
+    <u><b>{{ faculty.name }}</b></u>
+    <br>Subject: <u><b>{{ faculty.subject }}</b></u>
+  </h4>
+</ion-card-subtitle>
+</ion-col>
+</ion-row>
+</ion-grid>
+</ion-card-header>
+<ion-card-content>
+<!-- Star Rating Components for Each Field -->
+<ion-row class="feedback-fields">
+<ion-col size="6">
+<ion-label>Practical Knowledge</ion-label><br>
+</ion-col>
+<ion-col>
+  <app-rating [(rating)]="faculty.field1Rating"></app-rating>
+</ion-col>
+</ion-row>
+
+<ion-row class="feedback-fields">
+  <ion-col size="6">
+  <ion-label>Interaction with students</ion-label><br>
+  </ion-col>
+  <ion-col>
+    <app-rating [(rating)]="faculty.field2Rating"></app-rating>
+  </ion-col>
+  </ion-row>
+
+  <ion-row class="feedback-fields">
+    <ion-col size="6">
+    <ion-label>Practical Interaction</ion-label><br>
+    </ion-col>
+    <ion-col>
+      <app-rating [(rating)]="faculty.field3Rating"></app-rating>
+    </ion-col>
+    </ion-row>
+
+
+<!-- Text Feedback -->
+<ion-item >
+<ion-label position="stacked" style="margin-left: 80px;">Constructive Feedback</ion-label>
+<ion-textarea placeholder="Provide additional comments" style="margin-left: 50px;"></ion-textarea>
+</ion-item>
+<!-- Submit Button -->
+<ion-button expand="full">Submit Feedback</ion-button>
+</ion-card-content>
+</ion-card>
+</ion-content>

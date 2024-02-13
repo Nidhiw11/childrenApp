@@ -1,0 +1,57 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+  <ion-title>
+  FACULTY
+  </ion-title>
+  </ion-toolbar>
+  </ion-header>
+  <ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+  <ion-toolbar>
+  <ion-title size="large">FACULTY</ion-title>
+</ion-toolbar>
+</ion-header>
+<!-- Introduction -->
+<ion-card style="margin-top: 20px;">
+<ion-card-content style="border-radius: 20px;">
+<ion-card-title size="large" style="color: #03D3C0; text-align: center;" >Our Faculty Members</ion-card-title>
+</ion-card-content>
+</ion-card>
+<ion-card style="margin-top: 20px;">
+<ion-accordion-group >
+<ion-accordion *ngFor="let faculty of facultyMembers">
+<ion-item slot="header" color="light">
+<ion-thumbnail slot="start" class="pfp">
+<img [src]="faculty.photo" alt="{{ faculty.name }} photo">
+</ion-thumbnail>
+<div style="display: flex; flex-direction: column; margin-left: 10px;">
+  <ion-label>{{ faculty.name }}</ion-label>
+  <!-- Adjusted the style of the designation -->
+  <p style="font-size: 12px; color: #03D3C0;">{{ faculty.designation }}</p>
+</div>
+</ion-item>
+<div class="ion-padding" slot="content">
+<h3>{{ faculty.info }}</h3>
+<p [innerHTML]>{{ faculty.about }}</p>
+<ion-button fill="clear" href="{{ faculty.github }}"
+target="_blank">
+<ion-icon name="logo-github"></ion-icon>
+</ion-button>
+<ion-button fill="clear" href="{{ faculty.linkedin }}"
+target="_blank">
+<ion-icon name="logo-linkedin"></ion-icon>
+</ion-button>
+</div>
+</ion-accordion>
+</ion-accordion-group>
+</ion-card>
+<ion-row>
+  <ion-card style="width: 400px; margin-left: 10px;border-radius: 30px;">
+    <ion-img [src]="'assets/mca faculty.jpg'"></ion-img>
+    <ion-card-header>
+      <ion-card-title style="font-style: italic;font-size: 18px;margin-left: 50px;">Our dedicated faculty Members</ion-card-title>
+      <ion-card-subtitle> </ion-card-subtitle>
+    </ion-card-header>
+  </ion-card>
+</ion-row>
+</ion-content>

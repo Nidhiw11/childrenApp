@@ -1,0 +1,6 @@
+<ion-row class="rating-stars">
+  <ion-col *ngFor="let _ of stars; let i = index" class="star"
+  (click)="rate(i+1)">
+  <ion-icon name="{{ getStarIcon(i) }}"></ion-icon>
+  </ion-col>
+  </ion-row>
