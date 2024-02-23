@@ -7,7 +7,9 @@ import { FacultyService } from '../faculty.service';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
-import { logoLinkedin, logoGithub } from 'ionicons/icons';
+import { logoLinkedin, logoGithub,arrowBack,caretBackOutline } from 'ionicons/icons';
+import { Router } from '@angular/router';
+
 @Component({
 selector: 'app-tab2',
 templateUrl: 'tab2.page.html',
@@ -18,10 +20,16 @@ providers: [FacultyService],
 })
 export class Tab2Page implements OnInit {
 facultyMembers: any[]=[];
-constructor(private facultyService: FacultyService) {
-addIcons({ logoLinkedin, logoGithub});
+
+constructor(private facultyService: FacultyService, private router: Router) {
+addIcons({ logoLinkedin, logoGithub,arrowBack,caretBackOutline});
 }
+
+
 ngOnInit(): void {
 this.facultyMembers = this.facultyService.getFaculty();
 }
+goBack() {
+    this.router.navigate(['/tabs/tab1']); // Adjust the route according to your actual route for Tab1Page
+  }
 }

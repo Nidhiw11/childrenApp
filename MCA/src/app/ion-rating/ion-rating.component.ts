@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { IonicModule } from '@ionic/angular'; // Import IonicModule
-import './ion-rating.component.scss';
+// import './ion-rating.component.scss';
 import { addIcons } from 'ionicons';
-import { star, starOutline } from 'ionicons/icons';
+import { star, starOutline,arrowBack } from 'ionicons/icons';
 @Component({
 selector: 'app-rating',
 template: `
@@ -14,7 +14,6 @@ template: `
 [style.color]="getColor(i)"
 ></ion-icon>
 `,
-styleUrls: ['./rating.component.scss'],
 standalone: true,
 imports: [IonicModule, CommonModule],
 })
@@ -26,6 +25,7 @@ constructor() {
 addIcons({
 star,
 starOutline,
+arrowBack
 });
 }
 rate(index: number) {

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonToast, IonButton, IonCard, IonCardContent, IonCardTitle, IonCardHeader, IonImg, IonText, IonNote, IonLabel, IonItem, IonList, IonIcon, IonCol, IonRow, IonGrid, IonAccordionGroup, IonThumbnail, IonAccordion, IonCardSubtitle, IonSelectOption, IonSelect } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonToast, IonButton, IonCard, IonCardContent, IonCardTitle, IonCardHeader, IonImg, IonText, IonNote, IonLabel, IonItem, IonList, IonIcon, IonCol, IonRow, IonGrid, IonAccordionGroup, IonThumbnail, IonAccordion, IonCardSubtitle, IonSelectOption, IonSelect, IonFabButton, IonFabList, IonFab } from '@ionic/angular/standalone';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
 
 @Component({
@@ -10,6 +10,9 @@ import { ExploreContainerComponent } from '../explore-container/explore-containe
   imports:[
     IonHeader,
     IonToolbar,
+    IonFabButton,
+    IonFabList,
+    IonFab,
     IonTitle,
     IonContent,
     IonCardSubtitle,

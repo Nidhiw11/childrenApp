@@ -1,0 +1,17 @@
+.event-card {
+    margin-bottom: 16px; /* Add space between cards */
+  }
+  .card-subtitle {
+    font-size: 1.2rem; /* Increase font size */
+    // width: 100%;
+    // text-align: center;
+  }
+  .hover-row:hover {
+    background-color:  #03D3C0 ; 
+  }
+  
+  /* Adjust padding/margin for the ion-content */
+  ion-content.content {
+    --padding-bottom: 24px;
+  }
+  
