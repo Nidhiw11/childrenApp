@@ -1,0 +1,99 @@
+ion-fab-button {
+  --background: var(--ion-color-step-150, #ffffff);
+  --background-hover: var(--ion-color-step-200, #f2f2f2);
+  --background-focused: var(--ion-color-step-250, #d9d9d9);
+  --color: var(--ion-color-primary, #3880ff);
+}
+
+/*
+ * Material Design uses the ripple for activated
+ * so only style the iOS activated background
+ */
+.ios ion-fab-button {
+  --background-activated: var(--ion-color-step-250, #d9d9d9);
+}
+
+$categories: (
+  ionic: var(--ion-color-primary),
+  angular: #ac282b,
+  communication: #8e8d93,
+  tooling: #fe4c52,
+  services: #fd8b2d,
+  design: #fed035,
+  workshop: #69bb7b,
+  food: #3bc7c4,
+  documentation: #b16be3,
+  navigation: #6600cc
+);
+
+@each $track, $value in map-remove($categories) {
+  ion-item-sliding[track='#{$track}'] ion-label {
+    padding-left: 10px;
+
+    border-left: 2px solid $value;
+  }
+}
+
+.banner-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.banner-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(70%); /* Adjust brightness to your liking */
+}
+
+.banner-content {
+  position: relative;
+  color: #fff; /* Text color */
+}
+
+.banner-heading {
+  font-size: 2em;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.banner-location,
+.banner-eligibility {
+  font-size: 1.2em;
+  margin-bottom: 5px;
+}
+
+.banner-description {
+  font-size: 1.1em;
+  margin-bottom: 15px;
+}
+
+.callout-banner {
+  background-color: #4CAF50; /* Green color, you can change it */
+  padding: 15px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.callout-text {
+  flex-grow: 1;
+  color: #fff;
+  font-size: 1.2em;
+  margin-right: 15px;
+}
+
+.callout-button {
+  background-color: #fff;
+  color: #4CAF50; /* Green color */
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1em;
+}
+

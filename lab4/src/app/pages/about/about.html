@@ -1,0 +1,70 @@
+<ion-content class="custom-content">
+  <ion-header class="ion-no-border">
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <ion-title>ABOUT</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="custom-header" style="background-color: #fece2f;">
+    <div class="about-image-container">
+      <img src="https://www.spit.ac.in/wp-content/uploads/2020/03/I_Hack_ESummit2020Horizontal-Scaled-150x150.png"
+        class="about-image" alt="Image 1">
+      <img src="https://www.spit.ac.in/wp-content/uploads/2020/03/DJ-Sanghvi-Hackathon-150x150.png" class="about-image"
+        alt="Image 2">
+      <img src="https://www.spit.ac.in/wp-content/uploads/2020/02/NMIMS_HackNCode-12thOct_2019_resized-150x150.png"
+        class="about-image" alt="Image 3">
+      <img src="https://www.spit.ac.in/wp-content/uploads/2020/02/4_VESIMs1.png" class="about-image" alt="Image 4">
+    </div>
+  </div>
+
+  <div class="custom-info">
+    <h3 style="color: #fece2f;">About</h3>
+    <p>
+      The institute is located in 47 acres of green campus at Andheri (W), the fastest growing suburb of Mumbai. The
+      campus also houses four Bhavan's Institutions of great repute namely Bhavan's College (the arts, commerce and
+      science college), Sardar Patel College of Engineering – Government aided Engineering college, S.P. Jain Institute
+      of Management and Research, a management institute and A.H. Wadia, higher secondary school.
+
+      In 1957, the Bharatiya Vidya Bhavan conceived the idea of establishing an engineering college in Mumbai. Sardar
+      Patel College of Engineering was inaugurated on 19th August 1962.
+    </p>
+
+    <h3 style="color: #fece2f;">Achievements and Awards</h3>
+    <div class="custom-grid">
+      <img src="https://www.spit.ac.in/wp-content/uploads/2020/03/DJ-Sanghvi-Hackathon.png">
+      <img src="https://www.spit.ac.in/wp-content/uploads/2020/02/4_VESIMs1.png" class="about-image" alt="Image 4">
+    </div>
+
+    <h3 style="color: #fece2f;">Details</h3>
+    <ion-list lines="none">
+      <ion-item>
+        <ion-label position="stacked">Location</ion-label>
+        <ion-select [(ngModel)]="location" interface="popover">
+          <ion-select-option value="EXTC">EXTC</ion-select-option>
+          <ion-select-option value="MCA">MCA</ion-select-option>
+          <ion-select-option value="ETRX">ETRX</ion-select-option>
+          <ion-select-option value="BTECH">BTECH</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Established</ion-label>
+        <ion-datetime [(ngModel)]="conferenceDate" presentation="date"></ion-datetime>
+      </ion-item>
+    </ion-list>
+
+    <h3 style="color: #fece2f;">Internet</h3>
+    <ion-list lines="none">
+      <ion-item>
+        <ion-label>Wifi network</ion-label>
+        <ion-label class="ion-text-end">SPIT@Lab-401</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label>Password</ion-label>
+        <ion-label class="ion-text-end">spit@123</ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+</ion-content>

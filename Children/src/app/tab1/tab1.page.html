@@ -1,0 +1,37 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title class="app-title">Practice</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-title class="section-title">Welcome to Practice Sessions</ion-title>
+  <div class="subtitle">
+    <ion-title>Learn, Listen, Play</ion-title>
+  </div>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col size="6">
+        <!-- Card for Page 1 -->
+        <ion-card (click)="navigateToPage('page1')">
+          <img src="assets/child.jpg">
+          <ion-card-content>
+            <ion-card-title>Page 1</ion-card-title>
+            <ion-card-subtitle>This is page 1</ion-card-subtitle>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="6">
+        <!-- Card for Page 2 -->
+        <ion-card (click)="navigateToPage('page2')">
+          <img src="assets/child.jpg">
+          <ion-card-content>
+            <ion-card-title>Page 2</ion-card-title>
+            <ion-card-subtitle>This is page 2</ion-card-subtitle>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

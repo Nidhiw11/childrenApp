@@ -1,0 +1,7 @@
+{
+  "name": "Children",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

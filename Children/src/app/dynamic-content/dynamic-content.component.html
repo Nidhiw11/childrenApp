@@ -1,0 +1,14 @@
+<!-- <div class="dynamic-content">
+  <p>{{ dynamicContent }}</p>
+</div> -->
+<!-- For Page 1 -->
+<div class="page1-content" *ngIf="dynamicContent === 'Page 1'">
+  <h2>This is Page 1</h2>
+  <p>This is some content for Page 1. You can add any HTML elements here to represent your content.</p>
+</div>
+
+<!-- For Page 2 -->
+<div class="page2-content" *ngIf="dynamicContent === 'Page 2'">
+  <h2>This is Page 2</h2>
+  <p>This is some content for Page 2. You can add any HTML elements here to represent your content.</p>
+</div>

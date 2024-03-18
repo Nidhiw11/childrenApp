@@ -1,0 +1,3533 @@
+File: app/app-routing.module.ts
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { checkTutorialGuard } from './providers/check-tutorial.guard';
+
+const routes: Routes = [
+  {
+    path: '',
+    redirectTo: '/tutorial',
+    pathMatch: 'full'
+  },
+  {
+    path: 'account',
+    loadChildren: () => import('./pages/account/account.module').then(m => m.AccountModule)
+  },
+  {
+    path: 'support',
+    loadChildren: () => import('./pages/support/support.module').then(m => m.SupportModule)
+  },
+  {
+    path: 'login',
+    loadChildren: () => import('./pages/login/login.module').then(m => m.LoginModule)
+  },
+  {
+    path: 'signup',
+    loadChildren: () => import('./pages/signup/signup.module').then(m => m.SignUpModule)
+  },
+  {
+    path: 'app',
+    loadChildren: () => import('./pages/tabs-page/tabs-page.module').then(m => m.TabsModule)
+  },
+  {
+    path: 'tutorial',
+    loadChildren: () => import('./pages/tutorial/tutorial.module').then(m => m.TutorialModule),
+    canMatch: [checkTutorialGuard]
+  }
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
+
+------------------------
+
+File: app/app.component.html
+<ion-app [class.dark-theme]="dark">
+  <ion-split-pane contentId="main-content">
+
+    <ion-menu contentId="main-content">
+      <ion-content>
+        <ion-list lines="none">
+          <ion-list-header>
+            SPIT App 📚🏫 Atharva 
+          </ion-list-header>
+          <ion-menu-toggle autoHide="false" *ngFor="let p of appPages; let i = index">
+            <ion-item [routerLink]="p.url" routerLinkActive="selected" routerDirection="root" detail="false">
+              <ion-icon slot="start" [name]="p.icon + '-outline'"></ion-icon>
+              <ion-label>
+                {{p.title}}
+              </ion-label>
+            </ion-item>
+
+          </ion-menu-toggle>
+        </ion-list>
+
+        <ion-list *ngIf="loggedIn" lines="none">
+          <ion-list-header>
+            Account
+          </ion-list-header>
+
+          <ion-menu-toggle autoHide="false">
+            <ion-item routerLink="/account" routerLinkActive="active" routerDirection="root" detail="false">
+              <ion-icon slot="start" name="person"></ion-icon>
+              <ion-label>
+                Account
+              </ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+
+          <ion-menu-toggle autoHide="false">
+            <ion-item routerLink="/support" routerLinkActive="active" routerDirection="root" detail="false">
+              <ion-icon slot="start" name="help"></ion-icon>
+              <ion-label>
+                Support
+              </ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+
+          <ion-menu-toggle autoHide="false">
+            <ion-item button (click)="logout()" detail="false">
+              <ion-icon slot="start" name="log-out"></ion-icon>
+              <ion-label>
+                Logout
+              </ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+
+        </ion-list>
+
+        <ion-list *ngIf="!loggedIn" lines="none">
+          <ion-list-header>
+            Account
+          </ion-list-header>
+
+          <ion-menu-toggle autoHide="false">
+            <ion-item routerLink="/login" routerLinkActive="active" routerDirection="root" detail="false">
+              <ion-icon slot="start" name="log-in"></ion-icon>
+              <ion-label>
+                Login
+              </ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+
+          <ion-menu-toggle autoHide="false">
+            <ion-item routerLink="/support" routerLinkActive="active" routerDirection="root" detail="false">
+              <ion-icon slot="start" name="help"></ion-icon>
+              <ion-label>
+                Support
+              </ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+
+          <ion-menu-toggle autoHide="false">
+            <ion-item routerLink="/signup" routerLinkActive="active" routerDirection="root" detail="false">
+              <ion-icon slot="start" name="person-add"></ion-icon>
+              <ion-label>
+                Signup
+              </ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+
+          <ion-item>
+            <ion-icon slot="start" name="moon-outline"></ion-icon>
+            <ion-toggle [(ngModel)]="dark">
+              Dark Mode
+            </ion-toggle>
+          </ion-item>
+        </ion-list>
+
+        <ion-list lines="none">
+          <ion-list-header>
+            Welcome Screen
+          </ion-list-header>
+          <ion-menu-toggle autoHide="false">
+            <ion-item button (click)="openTutorial()" detail="false">
+              <ion-icon slot="start" name="hammer"></ion-icon>
+              <ion-label>Reboot</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+        </ion-list>
+      </ion-content>
+    </ion-menu>
+
+    <ion-router-outlet id="main-content"></ion-router-outlet>
+
+  </ion-split-pane>
+
+</ion-app>
+
+------------------------
+
+File: app/app.component.scss
+ion-menu ion-content {
+  --padding-top: 20px;
+  --padding-bottom: 20px;
+  --background: var(--ion-item-background, var(--ion-background-color, #ffffff));
+}
+
+/* Remove background transitions for switching themes */
+ion-menu ion-item {
+  --transition: none;
+}
+
+ion-item.selected {
+  --color: var(--ion-color-primary);
+}
+
+/*
+ * Material Design Menu
+*/
+ion-menu.md ion-list {
+  padding: 20px 0;
+}
+
+ion-menu.md ion-list-header {
+  padding-right: 18px;
+  padding-left: 18px;
+
+  font-size: min(0.875rem, 32px);
+
+  font-weight: 450;
+
+  letter-spacing: .1em;
+
+  text-transform: uppercase;
+}
+
+ion-menu.md ion-item {
+  --padding-start: 18px;
+
+  margin-right: 10px;
+
+  border-radius: 0 50px 50px 0;
+
+  font-weight: 500;
+}
+
+ion-menu.md ion-item.selected {
+  --background: rgb(var(--ion-color-primary-rgb) 0.14);
+}
+
+ion-menu.md ion-item.selected ion-icon {
+  color: var(--ion-color-primary);
+}
+
+ion-menu.md ion-list-header,
+ion-menu.md ion-item ion-icon {
+  color: var(--ion-color-step-650, #5f6368);
+}
+
+ion-menu.md ion-list:not(:last-of-type) {
+  border-bottom: 1px solid var(--ion-color-step-150, #d7d8da);
+}
+
+
+/*
+ * iOS Menu
+*/
+ion-menu.ios ion-list-header {
+  margin-bottom: 8px;
+
+  padding-right: 16px;
+  padding-left: 16px;
+
+  font-size: clamp(22px, 1.375rem, 40px);
+}
+
+ion-menu.ios ion-list {
+  padding: 20px 0 0;
+}
+
+ion-menu.ios ion-item {
+  --padding-start: 16px;
+  --min-height: 50px;
+}
+
+ion-menu.ios ion-item ion-icon {
+  color: #73849a;
+
+  font-size: 24px;
+}
+
+ion-menu.ios ion-item.selected ion-icon {
+  color: var(--ion-color-primary);
+}
+
+------------------------
+
+File: app/app.component.spec.ts
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Router } from '@angular/router';
+import { SwUpdate } from '@angular/service-worker';
+import { TestBed, waitForAsync } from '@angular/core/testing';
+import { MenuController, Platform } from '@ionic/angular';
+import { IonicStorageModule } from '@ionic/storage-angular';
+import { AppComponent } from './app.component';
+import { UserData } from './providers/user-data';
+
+describe('AppComponent', () => {
+  let menuSpy,
+    routerSpy,
+    userDataSpy,
+    statusBarSpy,
+    splashScreenSpy,
+    swUpdateSpy,
+    platformReadySpy,
+    platformSpy,
+    app,
+    fixture;
+
+  beforeEach(waitForAsync(() => {
+    menuSpy = jasmine.createSpyObj('MenuController', ['toggle', 'enable']);
+    routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl']);
+    userDataSpy = jasmine.createSpyObj('UserData', ['isLoggedIn', 'logout']);
+    swUpdateSpy = jasmine.createSpyObj('SwUpdate', ['available', 'activateUpdate']);
+
+    TestBed.configureTestingModule({
+      declarations: [AppComponent],
+      imports: [IonicStorageModule.forRoot()],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      providers: [
+        { provide: MenuController, useValue: menuSpy },
+        { provide: Router, useValue: routerSpy },
+        { provide: UserData, useValue: userDataSpy },
+        { provide: SwUpdate, useValue: swUpdateSpy },
+       // { provide: Platform, useValue: platformSpy }
+      ]
+    }).compileComponents();
+  }));
+  beforeEach(() => {
+    fixture = TestBed.createComponent(AppComponent);
+    app = fixture.debugElement.componentInstance;
+  });
+
+  it('should create the app', () => {
+    expect(app).toBeTruthy();
+  });
+});
+
+------------------------
+
+File: app/app.component.ts
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Router } from '@angular/router';
+import { SwUpdate } from '@angular/service-worker';
+
+import { MenuController, Platform, ToastController } from '@ionic/angular';
+
+import { StatusBar } from '@capacitor/status-bar';
+import { SplashScreen } from '@capacitor/splash-screen';
+
+import { Storage } from '@ionic/storage-angular';
+
+import { UserData } from './providers/user-data';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
+  encapsulation: ViewEncapsulation.None
+})
+export class AppComponent implements OnInit {
+  appPages = [
+    {
+      title: 'Schedule',
+      url: '/app/tabs/schedule',
+      icon: 'calendar'
+    },
+    {
+      title: 'Faculty',
+      url: '/app/tabs/speakers',
+      icon: 'people'
+    },
+    {
+      title: 'Map',
+      url: '/app/tabs/map',
+      icon: 'map'
+    },
+    {
+      title: 'About',
+      url: '/app/tabs/about',
+      icon: 'information-circle'
+    }
+  ];
+  loggedIn = false;
+  dark = false;
+
+  constructor(
+    private menu: MenuController,
+    private platform: Platform,
+    private router: Router,
+    private storage: Storage,
+    private userData: UserData,
+    private swUpdate: SwUpdate,
+    private toastCtrl: ToastController,
+  ) {
+    this.initializeApp();
+  }
+
+  async ngOnInit() {
+    await this.storage.create();
+    this.checkLoginStatus();
+    this.listenForLoginEvents();
+
+    this.swUpdate.available.subscribe(async res => {
+      const toast = await this.toastCtrl.create({
+        message: 'Update available!',
+        position: 'bottom',
+        buttons: [
+          {
+            role: 'cancel',
+            text: 'Reload'
+          }
+        ]
+      });
+
+      await toast.present();
+
+      toast
+        .onDidDismiss()
+        .then(() => this.swUpdate.activateUpdate())
+        .then(() => window.location.reload());
+    });
+  }
+
+  initializeApp() {
+    this.platform.ready().then(() => {
+      if (this.platform.is('hybrid')) {
+        StatusBar.hide();
+        SplashScreen.hide();
+      }
+    });
+  }
+
+  checkLoginStatus() {
+    return this.userData.isLoggedIn().then(loggedIn => {
+      return this.updateLoggedInStatus(loggedIn);
+    });
+  }
+
+  updateLoggedInStatus(loggedIn: boolean) {
+    setTimeout(() => {
+      this.loggedIn = loggedIn;
+    }, 300);
+  }
+
+  listenForLoginEvents() {
+    window.addEventListener('user:login', () => {
+      this.updateLoggedInStatus(true);
+    });
+
+    window.addEventListener('user:signup', () => {
+      this.updateLoggedInStatus(true);
+    });
+
+    window.addEventListener('user:logout', () => {
+      this.updateLoggedInStatus(false);
+    });
+  }
+
+  logout() {
+    this.userData.logout().then(() => {
+      return this.router.navigateByUrl('/app/tabs/schedule');
+    });
+  }
+
+  openTutorial() {
+    this.menu.enable(false);
+    this.storage.set('ion_did_tutorial', false);
+    this.router.navigateByUrl('/tutorial');
+  }
+}
+
+------------------------
+
+File: app/app.module.ts
+import { HttpClientModule } from '@angular/common/http';
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
+import { IonicModule } from '@ionic/angular';
+import { IonicStorageModule } from '@ionic/storage-angular';
+
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { FormsModule } from '@angular/forms';
+
+@NgModule({
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    HttpClientModule,
+    FormsModule,
+    IonicModule.forRoot(),
+    IonicStorageModule.forRoot(),
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: true
+    })
+  ],
+  declarations: [AppComponent],
+  providers: [InAppBrowser],
+  bootstrap: [AppComponent]
+})
+export class AppModule {}
+
+------------------------
+
+File: app/app.scss
+[hidden] {
+  /* stylelint-disable-next-line declaration-no-important */
+  display: none !important;
+}
+
+html {
+  /*
+   * For more information on dynamic font scaling, visit the documentation:
+   * https://ionicframework.com/docs/layout/dynamic-font-scaling
+   */
+  --ion-dynamic-font: var(--ion-default-dynamic-font);
+}
+
+------------------------
+
+File: app/interfaces/user-options.ts
+
+export interface UserOptions {
+  username: string;
+  password: string;
+}
+
+------------------------
+
+File: app/pages/about/about-routing.module.ts
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
+import { AboutPage } from './about';
+
+const routes: Routes = [
+  {
+    path: '',
+    component: AboutPage
+  }
+];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
+})
+export class AboutPageRoutingModule { }
+
+------------------------
+
+File: app/pages/about/about.html
+<ion-content>
+  <ion-header class="ion-no-border">
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <ion-buttons slot="end">
+        <ion-button (click)="presentPopover($event)">
+          <ion-icon slot="icon-only" ios="ellipsis-horizontal" md="ellipsis-vertical"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="about-header">
+    <!-- Instead of loading an image each time the select changes, use opacity to transition them -->
+    <div class="about-image EXTC" [ngStyle]="location === 'EXTC' && {'opacity': '1'}"></div>
+    <div class="about-image MCA" [ngStyle]="location === 'MCA' && {'opacity': '1'}"></div>
+    <div class="about-image ETRX" [ngStyle]="location === 'ETRX' && {'opacity': '1'}"></div>
+    <div class="about-image BTECH" [ngStyle]="location === 'BTECH' && {'opacity': '1'}"></div>
+  </div>
+
+  <div class="about-info">
+    <h3 class="ion-padding-top ion-padding-start">About</h3>
+
+    <p class="ion-padding-start ion-padding-end">
+      The institute is located in 47 acres of green campus at Andheri (W), the fastest growing suburb of Mumbai. The
+      campus also houses four Bhavan's Institutions of great repute namely Bhavan's College (the arts, commerce and
+      science college), Sardar Patel College of Engineering – Government aided Engineering college, S.P. Jain Institute
+      of Management and Research, a management institute and A.H. Wadia, higher secondary school.
+
+      In 1957, the Bharatiya Vidya Bhavan conceived the idea of establishing an engineering college in Mumbai. Sardar
+      Patel College of Engineering was inaugurated on 19th August 1962.
+    </p>
+
+    <h3 class="ion-padding-top ion-padding-start">Details</h3>
+
+    <ion-list lines="none">
+      <ion-item>
+        <ion-select label="Location" [(ngModel)]="location" [interfaceOptions]="selectOptions">
+          <ion-select-option value="EXTC">EXTC</ion-select-option>
+          <ion-select-option value="MCA">MCA</ion-select-option>
+          <ion-select-option value="ETRX">ETRX</ion-select-option>
+          <ion-select-option value="BTECH">BTECH</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item button="true" id="open-date-input">
+        <ion-label>
+          Established
+        </ion-label>
+        <ion-text slot="end">{{ conferenceDate | date: 'mediumDate' }}</ion-text>
+        <ion-popover id="date-input-popover" trigger="open-date-input" [showBackdrop]="false" side="top"
+          alignment="end">
+          <ng-template>
+            <ion-datetime max="2056" [(ngModel)]="conferenceDate" presentation="date"></ion-datetime>
+          </ng-template>
+        </ion-popover>
+      </ion-item>
+    </ion-list>
+
+    <h3 class="ion-padding-top ion-padding-start">Internet</h3>
+
+    <ion-list lines="none">
+      <ion-item>
+        <ion-label>
+          Wifi network
+        </ion-label>
+        <ion-label class="ion-text-end">
+         SPIT@Lab-401
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label>
+          Password
+        </ion-label>
+        <ion-label class="ion-text-end">
+          spit@123
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+</ion-content>
+------------------------
+
+File: app/pages/about/about.module.ts
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
+
+import { AboutPage } from './about';
+import { PopoverPage } from '../about-popover/about-popover';
+import { AboutPageRoutingModule } from './about-routing.module';
+
+@NgModule({
+    imports: [
+        CommonModule,
+        FormsModule,
+        IonicModule,
+        AboutPageRoutingModule
+    ],
+    declarations: [AboutPage, PopoverPage],
+    bootstrap: [AboutPage]
+})
+export class AboutModule {}
+
+------------------------
+
+File: app/pages/about/about.scss
+ion-toolbar {
+  --background: transparent;
+  --color: white;
+  position: absolute;
+
+  top: 0;
+  right: 0;
+  left: 0;
+}
+
+ion-toolbar ion-button,
+ion-toolbar ion-back-button,
+ion-toolbar ion-menu-button {
+  --color: white;
+}
+
+.about-header {
+  position: relative;
+
+  width: 100%;
+  height: 30%;
+}
+
+.about-header .about-image {
+  position: absolute;
+
+  inset: 0;
+
+  transition: opacity 500ms ease-in-out;
+
+  background-repeat: no-repeat;
+
+  background-position: center;
+  background-size: cover;
+
+  opacity: 0;
+}
+
+.about-header .EXTC {
+  background-image: url("/assets/img/about/madison.jpg");
+}
+
+.about-header .ETRX {
+  background-image: url("/assets/img/about/austin.jpg");
+}
+
+.about-header .MCA {
+  background-image: url("/assets/img/about/chicago.jpg");
+}
+
+.about-header .BTECH {
+  background-image: url("/assets/img/about/seattle.jpg");
+}
+
+.about-info {
+  position: relative;
+
+  margin-top: -10px;
+
+  border-radius: 10px;
+
+  background: var(--ion-background-color, #ffffff);
+
+  z-index: 2; // display rounded border above header image
+}
+
+.about-info h3 {
+  margin-top: 0;
+}
+
+.about-info ion-list {
+  padding-top: 0;
+}
+
+.about-info p {
+  color: var(--ion-color-dark);
+
+  line-height: 130%;
+}
+
+.about-info ion-icon {
+  margin-inline-end: 32px;
+}
+
+#date-input-popover {
+  --offset-y: -var(--ion-safe-area-bottom);
+  --max-width: 90%;
+  --width: 336px;
+}
+
+/*
+ * iOS Only
+ */
+
+.ios .about-info {
+  --ion-padding: 19px;
+}
+
+.ios .about-info h3 {
+  font-weight: 700;
+}
+
+------------------------
+
+File: app/pages/about/about.ts
+import { Component } from '@angular/core';
+
+import { PopoverController } from '@ionic/angular';
+
+import { PopoverPage } from '../about-popover/about-popover';
+
+@Component({
+  selector: 'page-about',
+  templateUrl: 'about.html',
+  styleUrls: ['./about.scss'],
+})
+export class AboutPage {
+  location = 'MCA';
+  conferenceDate = '11962-08-19';
+
+  selectOptions = {
+    header: 'Select a Location'
+  };
+
+  constructor(public popoverCtrl: PopoverController) { }
+
+  async presentPopover(event: Event) {
+    const popover = await this.popoverCtrl.create({
+      component: PopoverPage,
+      event
+    });
+    await popover.present();
+  }
+}
+
+------------------------
+
+File: app/pages/about-popover/about-popover.ts
+import { Component } from '@angular/core';
+
+import { PopoverController } from '@ionic/angular';
+
+@Component({
+  template: `
+    <ion-list>
+      <ion-item button (click)="close('https://ionicframework.com/getting-started')">
+        <ion-label>Learn Ionic</ion-label>
+      </ion-item>
+      <ion-item button (click)="close('https://ionicframework.com/docs/')">
+        <ion-label>Documentation</ion-label>
+      </ion-item>
+      <ion-item button (click)="close('https://showcase.ionicframework.com')">
+        <ion-label>Showcase</ion-label>
+      </ion-item>
+      <ion-item button (click)="close('https://github.com/ionic-team/ionic')">
+        <ion-label>GitHub Repo</ion-label>
+      </ion-item>
+      <ion-item button (click)="support()">
+        <ion-label>Support</ion-label>
+      </ion-item>
+    </ion-list>
+  `
+})
+export class PopoverPage {
+  constructor(public popoverCtrl: PopoverController) {}
+
+  support() {
+    // this.app.getRootNavs()[0].push('/support');
+    this.popoverCtrl.dismiss();
+  }
+
+  close(url: string) {
+    window.open(url, '_blank');
+    this.popoverCtrl.dismiss();
+  }
+}
+
+------------------------
+
+File: app/pages/account/account-routing.module.ts
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
+import { AccountPage } from './account';
+
+const routes: Routes = [
+  {
+    path: '',
+    component: AccountPage
+  }
+];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
+})
+export class AccountPageRoutingModule { }
+
+------------------------
+
+File: app/pages/account/account.html
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Account</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div *ngIf="username" class="ion-padding-top ion-text-center">
+    <img src="https://www.gravatar.com/avatar?d=mm&s=140" alt="avatar">
+    <h2>{{username}}</h2>
+
+    <ion-list inset>
+      <ion-item (click)="updatePicture()">Update Picture</ion-item>
+      <ion-item (click)="changeUsername()">Change Username</ion-item>
+      <ion-item (click)="changePassword()">Change Password</ion-item>
+      <ion-item (click)="support()">Support</ion-item>
+      <ion-item (click)="logout()">Logout</ion-item>
+    </ion-list>
+  </div>
+</ion-content>
+
+------------------------
+
+File: app/pages/account/account.module.ts
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
+
+import { AccountPage } from './account';
+import { AccountPageRoutingModule } from './account-routing.module';
+
+@NgModule({
+  imports: [
+    CommonModule,
+    IonicModule,
+    AccountPageRoutingModule
+  ],
+  declarations: [
+    AccountPage,
+  ]
+})
+export class AccountModule { }
+
+------------------------
+
+File: app/pages/account/account.scss
+img {
+  max-width: 140px;
+
+  border-radius: 50%;
+}
+
+------------------------
+
+File: app/pages/account/account.ts
+import { AfterViewInit, Component } from '@angular/core';
+import { Router } from '@angular/router';
+
+import { AlertController } from '@ionic/angular';
+
+import { UserData } from '../../providers/user-data';
+
+
+@Component({
+  selector: 'page-account',
+  templateUrl: 'account.html',
+  styleUrls: ['./account.scss'],
+})
+export class AccountPage implements AfterViewInit {
+  username: string;
+
+  constructor(
+    public alertCtrl: AlertController,
+    public router: Router,
+    public userData: UserData
+  ) { }
+
+  ngAfterViewInit() {
+    this.getUsername();
+  }
+
+  updatePicture() {
+    console.log('Clicked to update picture');
+  }
+
+  // Present an alert with the current username populated
+  // clicking OK will update the username and display it
+  // clicking Cancel will close the alert and do nothing
+  async changeUsername() {
+    const alert = await this.alertCtrl.create({
+      header: 'Change Username',
+      buttons: [
+        'Cancel',
+        {
+          text: 'Ok',
+          handler: (data: any) => {
+            this.userData.setUsername(data.username);
+            this.getUsername();
+          }
+        }
+      ],
+      inputs: [
+        {
+          type: 'text',
+          name: 'username',
+          value: this.username,
+          placeholder: 'username'
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  getUsername() {
+    this.userData.getUsername().then((username) => {
+      this.username = username;
+    });
+  }
+
+  changePassword() {
+    console.log('Clicked to change password');
+  }
+
+  logout() {
+    this.userData.logout();
+    this.router.navigateByUrl('/login');
+  }
+
+  support() {
+    this.router.navigateByUrl('/support');
+  }
+}
+
+------------------------
+
+File: app/pages/login/login-routing.module.ts
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
+import { LoginPage } from './login';
+
+const routes: Routes = [
+  {
+    path: '',
+    component: LoginPage
+  }
+];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
+})
+export class LoginPageRoutingModule { }
+
+------------------------
+
+File: app/pages/login/login.html
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+
+    <ion-title>Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="login-logo">
+    <img src="assets/img/download.jpg" alt="Ionic logo">
+  </div>
+
+  <div class="login-form">
+    <form #loginForm="ngForm" novalidate>
+      <ion-input
+        label="Username"
+        labelPlacement="stacked"
+        fill="solid"
+        [(ngModel)]="login.username"
+        name="username"
+        type="text"
+        #username="ngModel"
+        spellcheck="false"
+        autocapitalize="off"
+        errorText="Username is required"
+        required>
+      </ion-input>
+
+      <ion-input
+        label="Password"
+        labelPlacement="stacked"
+        fill="solid"
+        [(ngModel)]="login.password"
+        name="password"
+        type="password"
+        #password="ngModel"
+        errorText="Password is required"
+        required>
+      </ion-input>
+
+      <ion-row>
+        <ion-col>
+          <ion-button (click)="onLogin(loginForm)" type="submit" expand="block">Login</ion-button>
+        </ion-col>
+        <ion-col>
+          <ion-button (click)="onSignup()" color="light" expand="block">Signup</ion-button>
+        </ion-col>
+      </ion-row>
+    </form>
+  </div>
+
+</ion-content>
+
+------------------------
+
+File: app/pages/login/login.module.ts
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
+
+import { LoginPage } from './login';
+import { LoginPageRoutingModule } from './login-routing.module';
+
+@NgModule({
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    LoginPageRoutingModule
+  ],
+  declarations: [
+    LoginPage,
+  ]
+})
+export class LoginModule { }
+
+------------------------
+
+File: app/pages/login/login.scss
+.login-logo {
+  min-height: 200px;
+
+  padding: 20px 0;
+
+  text-align: center;
+}
+
+.login-logo img {
+  max-width: 150px;
+}
+
+.login-form {
+  padding: 16px;
+}
+
+ion-input {
+  margin-bottom: 10px;
+}
+
+------------------------
+
+File: app/pages/login/login.ts
+import { Component } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
+
+import { UserData } from '../../providers/user-data';
+
+import { UserOptions } from '../../interfaces/user-options';
+
+
+
+@Component({
+  selector: 'page-login',
+  templateUrl: 'login.html',
+  styleUrls: ['./login.scss'],
+})
+export class LoginPage {
+  login: UserOptions = { username: '', password: '' };
+  submitted = false;
+
+  constructor(
+    public userData: UserData,
+    public router: Router
+  ) { }
+
+  onLogin(form: NgForm) {
+    this.submitted = true;
+
+    if (form.valid) {
+      this.userData.login(this.login.username);
+      this.router.navigateByUrl('/app/tabs/schedule');
+    }
+  }
+
+  onSignup() {
+    this.router.navigateByUrl('/signup');
+  }
+}
+
+------------------------
+
+File: app/pages/map/map-routing.module.ts
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
+import { MapPage } from './map';
+
+const routes: Routes = [
+  {
+    path: '',
+    component: MapPage
+  }
+];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
+})
+export class MapPageRoutingModule { }
+
+------------------------
+
+File: app/pages/map/map.html
+<style>
+
+
+  .map-generator {
+    max-width: 100%;
+    max-height: 100%;
+    background: none;
+  }
+</style>
+
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Map</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div style="text-decoration:none; overflow:hidden;max-width:100%;width:500px;height:1200px;">
+    <div id="my-map-display" style="height:100%; width:100%;max-width:100%;"><iframe
+        style="height:100%;width:100%;border:0;" frameborder="0"
+        src="https://www.google.com/maps/embed/v1/place?q=Bharatiya+Vidya+Bhavan's+Sardar+Patel+Institute+of+Technology+(SPIT),+Old+D+N+Nagar,+Munshi+Nagar,+Andheri+West,+Mumbai,+Maharashtra,+India&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8"></iframe>
+    </div><a class="googl-ehtml" href="https://www.bootstrapskins.com/themes" id="get-data-for-embed-map">premium
+      bootstrap themes</a>
+
+  </div>
+</ion-content>
+------------------------
+
+File: app/pages/map/map.module.ts
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
+
+import { MapPage } from './map';
+import { MapPageRoutingModule } from './map-routing.module';
+
+@NgModule({
+  imports: [
+    CommonModule,
+    IonicModule,
+    MapPageRoutingModule
+  ],
+  declarations: [
+    MapPage,
+  ]
+})
+export class MapModule { }
+
+------------------------
+
+File: app/pages/map/map.scss
+.map-canvas {
+  position: absolute;
+
+  width: 100%;
+
+  height: 100%;
+
+  transition: opacity 150ms ease-in;
+
+  background-color: transparent;
+
+  opacity: 0;
+}
+
+.show-map {
+  opacity: 1;
+}
+
+------------------------
+
+File: app/pages/map/map.ts
+import { Component, ElementRef, Inject, ViewChild, AfterViewInit } from '@angular/core';
+import { ConferenceData } from '../../providers/conference-data';
+import { Platform } from '@ionic/angular';
+import { DOCUMENT} from '@angular/common';
+
+@Component({
+  selector: 'page-map',
+  templateUrl: 'map.html',
+  styleUrls: ['./map.scss']
+})
+export class MapPage implements AfterViewInit {
+  @ViewChild('mapCanvas', { static: true }) mapElement: ElementRef;
+
+  constructor(
+    @Inject(DOCUMENT) private doc: Document,
+    public confData: ConferenceData,
+    public platform: Platform) {}
+
+  async ngAfterViewInit() {
+    
+  }
+}
+------------------------
+
+File: app/pages/schedule/schedule-routing.module.ts
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
+import { SchedulePage } from './schedule';
+
+const routes: Routes = [
+  {
+    path: '',
+    component: SchedulePage
+  }
+];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
+})
+export class SchedulePageRoutingModule { }
+
+------------------------
+
+File: app/pages/schedule/schedule.html
+<ion-header translucent="true">
+  <ion-toolbar>
+    <ion-buttons *ngIf="!showSearchbar" slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-segment *ngIf="ios" [(ngModel)]="segment" (ionChange)="updateSchedule()">
+      <ion-segment-button value="all">
+        All
+      </ion-segment-button>
+      <ion-segment-button value="favorites">
+        Favorites
+      </ion-segment-button>
+    </ion-segment>
+    <ion-title *ngIf="!ios && !showSearchbar">Schedule</ion-title>
+    <ion-searchbar *ngIf="showSearchbar" showCancelButton="always" [(ngModel)]="queryText" (ionInput)="updateSchedule()" (ionCancel)="showSearchbar = false" placeholder="Search"></ion-searchbar>
+    <ion-buttons slot="end">
+      <ion-button *ngIf="!ios && !showSearchbar" (click)="showSearchbar = true">
+        <ion-icon slot="icon-only" name="search"></ion-icon>
+      </ion-button>
+      <ion-button *ngIf="!showSearchbar" (click)="presentFilter()">
+        <span *ngIf="ios">Filter</span>
+        <span *ngIf="!ios">
+          <ion-icon slot="icon-only" name="options"></ion-icon>
+        </span>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar *ngIf="!ios">
+    <ion-segment [(ngModel)]="segment" (ionChange)="updateSchedule()">
+      <ion-segment-button value="all">
+        All
+      </ion-segment-button>
+      <ion-segment-button value="favorites">
+        Favorites
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Schedule</ion-title>
+    </ion-toolbar>
+    <ion-toolbar>
+      <ion-searchbar [(ngModel)]="queryText" (ionInput)="updateSchedule()" placeholder="Search"></ion-searchbar>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-list #scheduleList [hidden]="shownSessions === 0">
+    <ion-item-group *ngFor="let group of groups" [hidden]="group.hide">
+      <ion-item-divider sticky>
+        <ion-label>
+          {{group.time}}
+        </ion-label>
+      </ion-item-divider>
+
+      <ion-item-sliding *ngFor="let session of group.sessions" #slidingItem [attr.track]="session.tracks[0] | lowercase"
+        [hidden]="session.hide">
+        <ion-item routerLink="/app/tabs/schedule/session/{{session.id}}">
+          <ion-label>
+            <h3>{{session.name}}</h3>
+            <p>
+              {{session.timeStart}} &mdash; {{session.timeEnd}}: {{session.location}}
+            </p>
+          </ion-label>
+        </ion-item>
+        <ion-item-options>
+          <ion-item-option color="favorite" (click)="addFavorite(slidingItem, session)" *ngIf="segment === 'all'">
+            Favorite
+          </ion-item-option>
+          <ion-item-option color="danger" (click)="removeFavorite(slidingItem, session, 'Remove Favorite')"
+            *ngIf="segment === 'favorites'">
+            Remove
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-item-group>
+  </ion-list>
+
+  <ion-list-header [hidden]="shownSessions > 0">
+    No Sessions Found
+  </ion-list-header>
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" #fab>
+    <ion-fab-button>
+      <ion-icon name="share-social"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="top">
+      <ion-fab-button color="vimeo" (click)="openSocial('Vimeo', fab)">
+        <ion-icon name="logo-vimeo"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button color="instagram" (click)="openSocial('Instagram', fab)">
+        <ion-icon name="logo-instagram"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button color="twitter" (click)="openSocial('Twitter', fab)">
+        <ion-icon name="logo-twitter"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button color="facebook" (click)="openSocial('Facebook', fab)">
+        <ion-icon name="logo-facebook"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
+</ion-content>
+
+------------------------
+
+File: app/pages/schedule/schedule.module.ts
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
+
+import { SchedulePage } from './schedule';
+import { ScheduleFilterPage } from '../schedule-filter/schedule-filter';
+import { SchedulePageRoutingModule } from './schedule-routing.module';
+
+@NgModule({
+    imports: [
+        CommonModule,
+        FormsModule,
+        IonicModule,
+        SchedulePageRoutingModule
+    ],
+    declarations: [
+        SchedulePage,
+        ScheduleFilterPage
+    ]
+})
+export class ScheduleModule { }
+
+------------------------
+
+File: app/pages/schedule/schedule.scss
+ion-fab-button {
+  --background: var(--ion-color-step-150, #ffffff);
+  --background-hover: var(--ion-color-step-200, #f2f2f2);
+  --background-focused: var(--ion-color-step-250, #d9d9d9);
+  --color: var(--ion-color-primary, #3880ff);
+}
+
+/*
+ * Material Design uses the ripple for activated
+ * so only style the iOS activated background
+ */
+.ios ion-fab-button {
+  --background-activated: var(--ion-color-step-250, #d9d9d9);
+}
+
+$categories: (
+  ionic: var(--ion-color-primary),
+  angular: #ac282b,
+  communication: #8e8d93,
+  tooling: #fe4c52,
+  services: #fd8b2d,
+  design: #fed035,
+  workshop: #69bb7b,
+  food: #3bc7c4,
+  documentation: #b16be3,
+  navigation: #6600cc
+);
+
+@each $track, $value in map-remove($categories) {
+  ion-item-sliding[track='#{$track}'] ion-label {
+    padding-left: 10px;
+
+    border-left: 2px solid $value;
+  }
+}
+
+------------------------
+
+File: app/pages/schedule/schedule.ts
+import { Component, ViewChild, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { AlertController, IonList, IonRouterOutlet, LoadingController, ModalController, ToastController, Config } from '@ionic/angular';
+
+import { ScheduleFilterPage } from '../schedule-filter/schedule-filter';
+import { ConferenceData } from '../../providers/conference-data';
+import { UserData } from '../../providers/user-data';
+
+@Component({
+  selector: 'page-schedule',
+  templateUrl: 'schedule.html',
+  styleUrls: ['./schedule.scss'],
+})
+export class SchedulePage implements OnInit {
+  // Gets a reference to the list element
+  @ViewChild('scheduleList', { static: true }) scheduleList: IonList;
+
+  ios: boolean;
+  dayIndex = 0;
+  queryText = '';
+  segment = 'all';
+  excludeTracks: any = [];
+  shownSessions: any = [];
+  groups: any = [];
+  confDate: string;
+  showSearchbar: boolean;
+
+  constructor(
+    public alertCtrl: AlertController,
+    public confData: ConferenceData,
+    public loadingCtrl: LoadingController,
+    public modalCtrl: ModalController,
+    public router: Router,
+    public routerOutlet: IonRouterOutlet,
+    public toastCtrl: ToastController,
+    public user: UserData,
+    public config: Config
+  ) { }
+
+  ngOnInit() {
+    this.updateSchedule();
+
+    this.ios = this.config.get('mode') === 'ios';
+  }
+
+  updateSchedule() {
+    // Close any open sliding items when the schedule updates
+    if (this.scheduleList) {
+      this.scheduleList.closeSlidingItems();
+    }
+
+    this.confData.getTimeline(this.dayIndex, this.queryText, this.excludeTracks, this.segment).subscribe((data: any) => {
+      this.shownSessions = data.shownSessions;
+      this.groups = data.groups;
+    });
+  }
+
+  async presentFilter() {
+    const modal = await this.modalCtrl.create({
+      component: ScheduleFilterPage,
+      presentingElement: this.routerOutlet.nativeEl,
+      componentProps: { excludedTracks: this.excludeTracks }
+    });
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+    if (data) {
+      this.excludeTracks = data;
+      this.updateSchedule();
+    }
+  }
+
+  async addFavorite(slidingItem: HTMLIonItemSlidingElement, sessionData: any) {
+    if (this.user.hasFavorite(sessionData.name)) {
+      // Prompt to remove favorite
+      this.removeFavorite(slidingItem, sessionData, 'Favorite already added');
+    } else {
+      // Add as a favorite
+      this.user.addFavorite(sessionData.name);
+
+      // Close the open item
+      slidingItem.close();
+
+      // Create a toast
+      const toast = await this.toastCtrl.create({
+        header: `${sessionData.name} was successfully added as a favorite.`,
+        duration: 3000,
+        buttons: [{
+          text: 'Close',
+          role: 'cancel'
+        }]
+      });
+
+      // Present the toast at the bottom of the page
+      await toast.present();
+    }
+
+  }
+
+  async removeFavorite(slidingItem: HTMLIonItemSlidingElement, sessionData: any, title: string) {
+    const alert = await this.alertCtrl.create({
+      header: title,
+      message: 'Would you like to remove this session from your favorites?',
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: () => {
+            // they clicked the cancel button, do not remove the session
+            // close the sliding item and hide the option buttons
+            slidingItem.close();
+          }
+        },
+        {
+          text: 'Remove',
+          handler: () => {
+            // they want to remove this session from their favorites
+            this.user.removeFavorite(sessionData.name);
+            this.updateSchedule();
+
+            // close the sliding item and hide the option buttons
+            slidingItem.close();
+          }
+        }
+      ]
+    });
+    // now present the alert on top of all other content
+    await alert.present();
+  }
+
+  async openSocial(network: string, fab: HTMLIonFabElement) {
+    const loading = await this.loadingCtrl.create({
+      message: `Posting to ${network}`,
+      duration: (Math.random() * 1000) + 500
+    });
+    await loading.present();
+    await loading.onWillDismiss();
+    fab.close();
+  }
+}
+
+------------------------
+
+File: app/pages/schedule-filter/schedule-filter.html
+<ion-header translucent="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button *ngIf="ios" (click)="dismiss()">Cancel</ion-button>
+      <ion-button *ngIf="!ios" (click)="selectAll(false)">Reset</ion-button>
+    </ion-buttons>
+
+    <ion-title>
+      Filter Sessions
+    </ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="applyFilters()" strong>Done</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list [lines]="ios ? 'inset' : 'full'">
+    <ion-list-header>Tracks</ion-list-header>
+
+    <ion-item *ngFor="let track of tracks" [attr.track]="track.name | lowercase">
+      <ion-icon *ngIf="ios" slot="start" [name]="track.icon" color="medium"></ion-icon>
+
+      <!-- TODO(FW-3891): remove aria-label once bug is resolved -->
+      <ion-checkbox [(ngModel)]="track.isChecked" [attr.aria-label]="track.name">
+        {{track.name}}
+      </ion-checkbox>
+    </ion-item>
+  </ion-list>
+
+</ion-content>
+
+<ion-footer translucent="true" *ngIf="ios">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="selectAll(false)">Deselect All</ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="selectAll(true)">Select All</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>
+
+------------------------
+
+File: app/pages/schedule-filter/schedule-filter.scss
+/*
+ * Material Design
+ */
+
+.md ion-toolbar ion-button {
+  letter-spacing: 0;
+
+  text-transform: capitalize;
+}
+
+.md ion-checkbox {
+  --checkbox-background-checked: transparent;
+  --border-color: transparent;
+  --border-color-checked: transparent;
+  --checkmark-color: var(--ion-color-primary);
+}
+
+.md ion-list {
+  background: inherit;
+}
+
+
+/*
+ * iOS
+ */
+
+.ios ion-list-header {
+  margin-top: 10px;
+}
+
+.ios ion-checkbox {
+  color: var(--ion-color-primary);
+}
+
+------------------------
+
+File: app/pages/schedule-filter/schedule-filter.ts
+import { Component } from '@angular/core';
+import { Config, ModalController, NavParams } from '@ionic/angular';
+
+import { ConferenceData } from '../../providers/conference-data';
+
+
+@Component({
+  selector: 'page-schedule-filter',
+  templateUrl: 'schedule-filter.html',
+  styleUrls: ['./schedule-filter.scss'],
+})
+export class ScheduleFilterPage {
+  ios: boolean;
+
+  tracks: {name: string, icon: string, isChecked: boolean}[] = [];
+
+  constructor(
+    public confData: ConferenceData,
+    private config: Config,
+    public modalCtrl: ModalController,
+    public navParams: NavParams
+  ) { }
+
+  ionViewWillEnter() {
+    this.ios = this.config.get('mode') === `ios`;
+
+    // passed in array of track names that should be excluded (unchecked)
+    const excludedTrackNames = this.navParams.get('excludedTracks');
+
+    this.confData.getTracks().subscribe((tracks: any[]) => {
+      tracks.forEach(track => {
+        this.tracks.push({
+          name: track.name,
+          icon: track.icon,
+          isChecked: (excludedTrackNames.indexOf(track.name) === -1)
+        });
+      });
+    });
+  }
+
+  selectAll(check: boolean) {
+    // set all to checked or unchecked
+    this.tracks.forEach(track => {
+      track.isChecked = check;
+    });
+  }
+
+  applyFilters() {
+    // Pass back a new array of track names to exclude
+    const excludedTrackNames = this.tracks.filter(c => !c.isChecked).map(c => c.name);
+    this.dismiss(excludedTrackNames);
+  }
+
+  dismiss(data?: any) {
+    // using the injected ModalController this page
+    // can "dismiss" itself and pass back data
+    this.modalCtrl.dismiss(data);
+  }
+}
+
+------------------------
+
+File: app/pages/session-detail/session-detail-routing.module.ts
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
+import { SessionDetailPage } from './session-detail';
+
+const routes: Routes = [
+  {
+    path: '',
+    component: SessionDetailPage
+  }
+];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
+})
+export class SessionDetailPageRoutingModule { }
+
+------------------------
+
+File: app/pages/session-detail/session-detail.html
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [defaultHref]="defaultHref"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleFavorite()">
+        <ion-icon *ngIf="!isFavorite" slot="icon-only" name="star-outline"></ion-icon>
+        <ion-icon *ngIf="isFavorite" slot="icon-only" name="star"></ion-icon>
+      </ion-button>
+      <ion-button (click)="shareSession()">
+        <ion-icon slot="icon-only" name="share"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div *ngIf="session" class="ion-padding">
+    <h1>{{session.name}}</h1>
+    <span *ngFor="let track of session?.tracks" [class]="'session-track-'+track.toLowerCase()">{{track}}</span>
+    <p>{{session.description}}</p>
+    <ion-text color="medium">
+      {{session.timeStart}} &ndash; {{session.timeEnd}}
+      <br /> {{session.location}}
+    </ion-text>
+  </div>
+
+  <ion-list>
+    <ion-item (click)="sessionClick('watch')" button>
+      <ion-label color="primary">Mark Attended</ion-label>
+    </ion-item>
+    <ion-item (click)="sessionClick('add to calendar')" button>
+      <ion-label color="primary">Add to Calendar</ion-label>
+    </ion-item>
+    <ion-item (click)="sessionClick('mark as unwatched')" button>
+      <ion-label color="primary">View Notes</ion-label>
+    </ion-item>
+    <ion-item (click)="sessionClick('download video')" button>
+      <ion-label color="primary">Lecture Recording</ion-label>
+      <ion-icon slot="end" color="primary" size="small" name="cloud-download"></ion-icon>
+    </ion-item>
+    <ion-item (click)="sessionClick('leave feedback')" button>
+      <ion-label color="primary">Leave Feedback</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
+
+------------------------
+
+File: app/pages/session-detail/session-detail.module.ts
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+import { SessionDetailPage } from './session-detail';
+import { SessionDetailPageRoutingModule } from './session-detail-routing.module';
+import { IonicModule } from '@ionic/angular';
+
+@NgModule({
+  imports: [
+    CommonModule,
+    IonicModule,
+    SessionDetailPageRoutingModule
+  ],
+  declarations: [
+    SessionDetailPage,
+  ]
+})
+export class SessionDetailModule { }
+
+------------------------
+
+File: app/pages/session-detail/session-detail.scss
+.session-track-ionic {
+  color: var(--ion-color-primary);
+}
+
+.session-track-angular {
+  color: var(--ion-color-angular);
+}
+
+.session-track-communication {
+  color: var(--ion-color-communication);
+}
+
+.session-track-tooling {
+  color: var(--ion-color-tooling);
+}
+
+.session-track-services {
+  color: var(--ion-color-services);
+}
+
+.session-track-design {
+  color: var(--ion-color-design);
+}
+
+.session-track-workshop {
+  color: var(--ion-color-workshop);
+}
+
+.session-track-food {
+  color: var(--ion-color-food);
+}
+
+.session-track-documentation {
+  color: var(--ion-color-documentation);
+}
+
+.session-track-navigation {
+  color: var(--ion-color-navigation);
+}
+
+/* Favorite Icon
+ * --------------------------------------------------------
+ */
+
+.show-favorite {
+  position: relative;
+}
+
+.icon-heart-empty,
+.icon-heart {
+  --border-radius: 50%;
+  --padding-start: 0;
+  --padding-end: 0;
+
+  position: absolute;
+
+  top: 5px;
+  right: 5px;
+
+  width: 48px;
+  height: 48px;
+
+  transition: transform 300ms ease;
+
+  font-size: 16px;
+}
+
+.icon-heart-empty {
+  transform: scale(1);
+}
+
+.icon-heart {
+  transform: scale(0);
+}
+
+.show-favorite .icon-heart {
+  transform: scale(1);
+}
+
+.show-favorite .icon-heart-empty {
+  transform: scale(0);
+}
+
+h1 {
+  margin: 0;
+}
+------------------------
+
+File: app/pages/session-detail/session-detail.ts
+import { Component } from '@angular/core';
+
+import { ConferenceData } from '../../providers/conference-data';
+import { ActivatedRoute } from '@angular/router';
+import { UserData } from '../../providers/user-data';
+
+@Component({
+  selector: 'page-session-detail',
+  styleUrls: ['./session-detail.scss'],
+  templateUrl: 'session-detail.html'
+})
+export class SessionDetailPage {
+  session: any;
+  isFavorite = false;
+  defaultHref = '';
+
+  constructor(
+    private dataProvider: ConferenceData,
+    private userProvider: UserData,
+    private route: ActivatedRoute
+  ) { }
+
+  ionViewWillEnter() {
+    this.dataProvider.load().subscribe((data: any) => {
+      if (data && data.schedule && data.schedule[0] && data.schedule[0].groups) {
+        const sessionId = this.route.snapshot.paramMap.get('sessionId');
+        for (const group of data.schedule[0].groups) {
+          if (group && group.sessions) {
+            for (const session of group.sessions) {
+              if (session && session.id === sessionId) {
+                this.session = session;
+
+                this.isFavorite = this.userProvider.hasFavorite(
+                  this.session.name
+                );
+
+                break;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  ionViewDidEnter() {
+    this.defaultHref = `/app/tabs/schedule`;
+  }
+
+  sessionClick(item: string) {
+    console.log('Clicked', item);
+  }
+
+  toggleFavorite() {
+    if (this.userProvider.hasFavorite(this.session.name)) {
+      this.userProvider.removeFavorite(this.session.name);
+      this.isFavorite = false;
+    } else {
+      this.userProvider.addFavorite(this.session.name);
+      this.isFavorite = true;
+    }
+  }
+
+  shareSession() {
+    console.log('Clicked share session');
+  }
+}
+
+------------------------
+
+File: app/pages/signup/signup-routing.module.ts
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
+import { SignupPage } from './signup';
+
+const routes: Routes = [
+  {
+    path: '',
+    component: SignupPage
+  }
+];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
+})
+export class SignupPageRoutingModule { }
+
+------------------------
+
+File: app/pages/signup/signup.html
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Signup</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="signup-logo">
+    <img src="assets/img/download.jpg" alt="Ionic Logo">
+  </div>
+
+  <div class="signup-form">
+    <form #signupForm="ngForm" novalidate>
+      <ion-input
+        label="Username"
+        labelPlacement="stacked"
+        fill="solid"
+        [(ngModel)]="signup.username"
+        name="username"
+        type="text"
+        #username="ngModel"
+        errorText="Username is required"
+        required>
+      </ion-input>
+
+      <ion-input
+        label="Password"
+        labelPlacement="stacked"
+        fill="solid"
+        [(ngModel)]="signup.password"
+        name="password"
+        type="password"
+        #password="ngModel"
+        errorText="Password is required"
+        required>
+      </ion-input>
+
+      <div class="ion-padding">
+        <ion-button (click)="onSignup(signupForm)" type="submit" expand="block">Create</ion-button>
+      </div>
+    </form>
+  </div>
+
+</ion-content>
+
+------------------------
+
+File: app/pages/signup/signup.module.ts
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
+
+import { SignupPage } from './signup';
+import { SignupPageRoutingModule } from './signup-routing.module';
+
+@NgModule({
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    SignupPageRoutingModule
+  ],
+  declarations: [
+    SignupPage,
+  ]
+})
+export class SignUpModule { }
+
+------------------------
+
+File: app/pages/signup/signup.scss
+.signup-logo {
+  min-height: 200px;
+
+  padding: 20px 0;
+
+  text-align: center;
+}
+
+.signup-logo img {
+  max-width: 150px;
+}
+
+.signup-form {
+  padding: 16px;
+}
+
+ion-input {
+  margin-bottom: 10px;
+}
+
+------------------------
+
+File: app/pages/signup/signup.ts
+import { Component } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
+
+import { UserData } from '../../providers/user-data';
+
+import { UserOptions } from '../../interfaces/user-options';
+
+
+
+@Component({
+  selector: 'page-signup',
+  templateUrl: 'signup.html',
+  styleUrls: ['./signup.scss'],
+})
+export class SignupPage {
+  signup: UserOptions = { username: '', password: '' };
+  submitted = false;
+
+  constructor(
+    public router: Router,
+    public userData: UserData
+  ) {}
+
+  onSignup(form: NgForm) {
+    this.submitted = true;
+
+    if (form.valid) {
+      this.userData.signup(this.signup.username);
+      this.router.navigateByUrl('/app/tabs/schedule');
+    }
+  }
+}
+
+------------------------
+
+File: app/pages/speaker-detail/speaker-detail-routing.module.ts
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
+import { SpeakerDetailPage } from './speaker-detail';
+
+const routes: Routes = [
+  {
+    path: '',
+    component: SpeakerDetailPage
+  }
+];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
+})
+export class SpeakerDetailPageRoutingModule { }
+
+------------------------
+
+File: app/pages/speaker-detail/speaker-detail.html
+<ion-content class="speaker-detail">
+  <ion-header class="ion-no-border">
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-back-button defaultHref="/app/tabs/speakers"></ion-back-button>
+      </ion-buttons>
+      <ion-buttons *ngIf="speaker" slot="end">
+        <ion-button (click)="openContact(speaker)">
+          <ion-icon slot="icon-only" ios="call-outline" md="call-sharp"></ion-icon>
+        </ion-button>
+        <ion-button (click)="openSpeakerShare(speaker)">
+          <ion-icon slot="icon-only" ios="share-outline" md="share-sharp"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="speaker-background">
+    <img [src]="speaker?.profilePic" [alt]="speaker?.name">
+    <h2>{{speaker?.name}}</h2>
+  </div>
+
+  <div class="ion-padding speaker-detail">
+    <p>{{speaker?.about}} Say hello on social media!</p>
+
+    <hr>
+
+    <ion-chip color="twitter" button (click)="openExternalUrl('https://twitter.com/' + speaker.twitter)">
+      <ion-icon name="logo-twitter"></ion-icon>
+      <ion-label>Twitter</ion-label>
+    </ion-chip>
+
+    <ion-chip color="dark" button (click)="openExternalUrl('https://github.com/ionic-team/ionic')">
+      <ion-icon name="logo-github"></ion-icon>
+      <ion-label>GitHub</ion-label>
+    </ion-chip>
+
+    <ion-chip color="instagram" button (click)="openExternalUrl('https://instagram.com/ionicframework')">
+      <ion-icon name="logo-instagram"></ion-icon>
+      <ion-label>Instagram</ion-label>
+    </ion-chip>
+  </div>
+</ion-content>
+
+------------------------
+
+File: app/pages/speaker-detail/speaker-detail.module.ts
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+import { SpeakerDetailPage } from './speaker-detail';
+import { SpeakerDetailPageRoutingModule } from './speaker-detail-routing.module';
+import { IonicModule } from '@ionic/angular';
+
+@NgModule({
+  imports: [
+    CommonModule,
+    IonicModule,
+    SpeakerDetailPageRoutingModule
+  ],
+  declarations: [
+    SpeakerDetailPage,
+  ]
+})
+export class SpeakerDetailModule { }
+
+------------------------
+
+File: app/pages/speaker-detail/speaker-detail.scss
+/*
+ * Speaker Background
+ */
+
+ion-toolbar {
+  --background: transparent;
+  --color: white;
+
+  position: absolute;
+
+  top: 0;
+  right: 0;
+  left: 0;
+}
+
+ion-toolbar ion-button,
+ion-toolbar ion-back-button,
+ion-toolbar ion-menu-button {
+  --color: white;
+}
+
+.speaker-background {
+  display: flex;
+  position: relative;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  height: calc(250px + var(--ion-safe-area-top));
+
+  padding-top: var(--ion-safe-area-top);
+
+  background: center / cover url("/assets/img/speaker-background.png") no-repeat;
+}
+
+.speaker-background img {
+  width: 70px;
+
+  margin-top: calc(-1 * var(--ion-safe-area-top));
+
+  border-radius: 50%;
+}
+
+.speaker-background h2 {
+  position: absolute;
+
+  bottom: 10px;
+
+  color: white;
+}
+
+.md .speaker-background {
+  box-shadow: rgb(0 0 0 / 20%) 0 3px 1px -2px, rgb(0 0 0 / 14%) 0 2px 2px 0, rgb(0 0 0 / 12%) 0 1px 5px 0;
+}
+
+.ios .speaker-background {
+  box-shadow: rgb(0 0 0 / 12%) 0 4px 16px;
+}
+
+/*
+ * Speaker Details
+ */
+
+.speaker-detail p {
+  margin-right: 6px;
+  margin-left: 6px;
+}
+
+.speaker-detail hr {
+  margin-top: 20px;
+  margin-bottom: 20px;
+
+  background: var(--ion-color-step-150, #d7d8da);
+}
+
+------------------------
+
+File: app/pages/speaker-detail/speaker-detail.ts
+import { Component } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { ConferenceData } from '../../providers/conference-data';
+import { ActionSheetController } from '@ionic/angular';
+import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
+
+@Component({
+  selector: 'page-speaker-detail',
+  templateUrl: 'speaker-detail.html',
+  styleUrls: ['./speaker-detail.scss'],
+})
+export class SpeakerDetailPage {
+  speaker: any;
+
+  constructor(
+    private dataProvider: ConferenceData,
+    private route: ActivatedRoute,
+    public actionSheetCtrl: ActionSheetController,
+    public confData: ConferenceData,
+    public inAppBrowser: InAppBrowser,
+  ) {}
+
+  ionViewWillEnter() {
+    this.dataProvider.load().subscribe((data: any) => {
+      const speakerId = this.route.snapshot.paramMap.get('speakerId');
+      if (data && data.speakers) {
+        for (const speaker of data.speakers) {
+          if (speaker && speaker.id === speakerId) {
+            this.speaker = speaker;
+            break;
+          }
+        }
+      }
+    });
+  }
+
+  openExternalUrl(url: string) {
+    this.inAppBrowser.create(
+      url,
+      '_blank'
+    );
+  }
+
+  async openSpeakerShare(speaker: any) {
+    const actionSheet = await this.actionSheetCtrl.create({
+      header: 'Share ' + speaker.name,
+      buttons: [
+        {
+          text: 'Copy Link',
+          handler: () => {
+            console.log(
+              'Copy link clicked on https://twitter.com/' + speaker.twitter
+            );
+            if (
+              (window as any).cordova &&
+              (window as any).cordova.plugins.clipboard
+            ) {
+              (window as any).cordova.plugins.clipboard.copy(
+                'https://twitter.com/' + speaker.twitter
+              );
+            }
+          }
+        },
+        {
+          text: 'Share via ...'
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        }
+      ]
+    });
+
+    await actionSheet.present();
+  }
+
+  async openContact(speaker: any) {
+    const mode = 'ios'; // this.config.get('mode');
+
+    const actionSheet = await this.actionSheetCtrl.create({
+      header: 'Contact ' + speaker.name,
+      buttons: [
+        {
+          text: `Email ( ${speaker.email} )`,
+          icon: mode !== 'ios' ? 'mail' : null,
+          handler: () => {
+            window.open('mailto:' + speaker.email);
+          }
+        },
+        {
+          text: `Call ( ${speaker.phone} )`,
+          icon: mode !== 'ios' ? 'call' : null,
+          handler: () => {
+            window.open('tel:' + speaker.phone);
+          }
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        }
+      ]
+    });
+
+    await actionSheet.present();
+  }
+}
+
+------------------------
+
+File: app/pages/speaker-list/speaker-list-routing.module.ts
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
+import { SpeakerListPage } from './speaker-list';
+const routes: Routes = [
+  {
+    path: '',
+    component: SpeakerListPage
+  }
+];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
+})
+export class SpeakerListPageRoutingModule {}
+
+------------------------
+
+File: app/pages/speaker-list/speaker-list.html
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Faculty</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Staff</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-grid fixed>
+    <ion-row>
+      <ion-col size="12" size-md="6" *ngFor="let speaker of speakers">
+        <ion-card class="speaker-card">
+          <ion-card-header>
+            <ion-item detail="false" lines="none" class="speaker-item" routerLink="/app/tabs/speakers/speaker-details/{{speaker.id}}">
+              <ion-avatar slot="start">
+                <img [src]="speaker.profilePic" [alt]="speaker.name + ' profile picture'">
+              </ion-avatar>
+              <ion-label>
+                <h2>{{speaker.name}}</h2>
+                <p>{{speaker.title}}</p>
+              </ion-label>
+            </ion-item>
+          </ion-card-header>
+
+          <ion-card-content>
+            <ion-list lines="none">
+              <ion-item *ngFor="let session of speaker.sessions" detail="false" routerLink="/app/tabs/speakers/session/{{session.id}}">
+                <ion-label>
+                  <h3>{{session.name}}</h3>
+                </ion-label>
+              </ion-item>
+
+              <ion-item detail="false" routerLink="/app/tabs/speakers/speaker-details/{{speaker.id}}">
+                <ion-label>
+                  <h3>About {{speaker.name}} | Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus nesciunt dignissimos libero beatae, neque officia sed modi officiis incidunt illum dolorem sit amet quidem iure nihil obcaecati, repudiandae ducimus id. </h3>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
+------------------------
+
+File: app/pages/speaker-list/speaker-list.module.ts
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
+
+import { SpeakerListPage } from './speaker-list';
+import { SpeakerListPageRoutingModule } from './speaker-list-routing.module';
+
+@NgModule({
+  imports: [
+    CommonModule,
+    IonicModule,
+    SpeakerListPageRoutingModule
+  ],
+  declarations: [SpeakerListPage],
+})
+export class SpeakerListModule {}
+
+------------------------
+
+File: app/pages/speaker-list/speaker-list.scss
+.speaker-card {
+  display: flex;
+
+  flex-direction: column;
+}
+
+/* Due to the fact the cards are inside of columns the margins don't overlap
+ * properly so we want to remove the extra margin between cards
+ */
+ion-col:not(:last-of-type) .speaker-card {
+  margin-bottom: 0;
+}
+
+.speaker-card .speaker-item {
+  --min-height: 85px;
+}
+
+.speaker-card .speaker-item h2 {
+  font-size: 18px;
+  font-weight: 500;
+
+  letter-spacing: 0.02em;
+}
+
+.speaker-card .speaker-item p {
+  font-size: 13px;
+
+  letter-spacing: 0.02em;
+}
+
+.speaker-card ion-card-header {
+  padding: 0;
+}
+
+.speaker-card ion-card-content {
+  flex: 1 1 auto;
+
+  padding: 0;
+}
+
+.ios ion-list {
+  margin-bottom: 10px;
+}
+
+.md ion-list {
+  padding: 0;
+
+  border-top: 1px solid var(--ion-color-step-150, #d7d8da);
+}
+------------------------
+
+File: app/pages/speaker-list/speaker-list.spec.ts
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Router } from '@angular/router';
+import { TestBed, waitForAsync } from '@angular/core/testing';
+import { ActionSheetController } from '@ionic/angular';
+
+import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
+import { SpeakerListPage } from './speaker-list';
+import { ConferenceData } from '../../providers/conference-data';
+
+const confDataSub = {};
+
+describe('SpeakerListPage', () => {
+  let fixture, app;
+  beforeEach(waitForAsync(() => {
+    const actionSheetSpy = jasmine.createSpyObj('ActionSheetController', [
+      'create'
+    ]);
+    const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl']);
+    const iabSpy = jasmine.createSpyObj('InAppBrowser', ['create']);
+
+    TestBed.configureTestingModule({
+      declarations: [SpeakerListPage],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      providers: [
+        { provide: ActionSheetController, useValue: actionSheetSpy },
+        { provide: InAppBrowser, useValue: iabSpy },
+        { provide: Router, useValue: routerSpy },
+        { provide: ConferenceData, useValue: confDataSub }
+      ]
+    }).compileComponents();
+  }));
+  beforeEach(() => {
+    fixture = TestBed.createComponent(SpeakerListPage);
+    app = fixture.debugElement.componentInstance;
+  });
+  it('should create the speaker list page', () => {
+    expect(app).toBeTruthy();
+  });
+});
+
+------------------------
+
+File: app/pages/speaker-list/speaker-list.ts
+import { Component } from '@angular/core';
+import { ConferenceData } from '../../providers/conference-data';
+
+@Component({
+  selector: 'page-speaker-list',
+  templateUrl: 'speaker-list.html',
+  styleUrls: ['./speaker-list.scss'],
+})
+export class SpeakerListPage {
+  speakers: any[] = [];
+
+  constructor(public confData: ConferenceData) {}
+
+  ionViewDidEnter() {
+    this.confData.getSpeakers().subscribe((speakers: any[]) => {
+      this.speakers = speakers;
+    });
+  }
+}
+
+------------------------
+
+File: app/pages/support/support-routing.module.ts
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
+import { SupportPage } from './support';
+
+const routes: Routes = [
+  {
+    path: '',
+    component: SupportPage
+  }
+];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
+})
+export class SupportPageRoutingModule { }
+
+------------------------
+
+File: app/pages/support/support.html
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Support</ion-title>
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+  <div class="support-logo">
+    <img src="assets/img/download.jpg" alt="Ionic Logo">
+  </div>
+
+  <div class="support-form">
+    <form #submitForm="ngForm" novalidate (ngSubmit)="submit(submitForm)">
+      <ion-textarea
+        label="Enter your support message below"
+        labelPlacement="stacked"
+        fill="solid"
+        [(ngModel)]="supportMessage"
+        name="supportQuestion"
+        #supportQuestion="ngModel"
+        rows="6"
+        errorText="Support message is required"
+        required>
+      </ion-textarea>
+
+      <div class="ion-padding">
+        <ion-button expand="block" type="submit">Submit</ion-button>
+      </div>
+    </form>
+  </div>
+</ion-content>
+
+------------------------
+
+File: app/pages/support/support.module.ts
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
+import { SupportPage } from './support';
+import { SupportPageRoutingModule } from './support-routing.module';
+
+@NgModule({
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    SupportPageRoutingModule
+  ],
+  declarations: [
+    SupportPage,
+  ]
+})
+export class SupportModule { }
+
+------------------------
+
+File: app/pages/support/support.scss
+.support-logo {
+  min-height: 200px;
+
+  padding: 20px 0;
+
+  text-align: center;
+}
+
+.support-logo img {
+  max-width: 150px;
+}
+
+.list {
+  margin-bottom: 0;
+}
+
+.support-form {
+  padding: 16px;
+}
+
+------------------------
+
+File: app/pages/support/support.ts
+import { Component } from '@angular/core';
+import { NgForm } from '@angular/forms';
+
+import { AlertController, ToastController } from '@ionic/angular';
+
+
+@Component({
+  selector: 'page-support',
+  templateUrl: 'support.html',
+  styleUrls: ['./support.scss'],
+})
+export class SupportPage {
+  submitted = false;
+  supportMessage: string;
+
+  constructor(
+    public alertCtrl: AlertController,
+    public toastCtrl: ToastController
+  ) { }
+
+  async ionViewDidEnter() {
+    const toast = await this.toastCtrl.create({
+      message: 'Feedback will be visible to the faculty. Thank you!',
+      duration: 3000
+    });
+    await toast.present();
+  }
+
+  async submit(form: NgForm) {
+    this.submitted = true;
+
+    if (form.valid) {
+      this.supportMessage = '';
+      this.submitted = false;
+
+      const toast = await this.toastCtrl.create({
+        message: 'Your support request has been sent.',
+        duration: 3000
+      });
+      await toast.present();
+    }
+  }
+
+  // If the user enters text in the support question and then navigates
+  // without submitting first, ask if they meant to leave the page
+  // async ionViewCanLeave(): Promise<boolean> {
+  //   // If the support message is empty we should just navigate
+  //   if (!this.supportMessage || this.supportMessage.trim().length === 0) {
+  //     return true;
+  //   }
+
+  //   return new Promise((resolve: any, reject: any) => {
+  //     const alert = await this.alertCtrl.create({
+  //       title: 'Leave this page?',
+  //       message: 'Are you sure you want to leave this page? Your support message will not be submitted.',
+  //       buttons: [
+  //         { text: 'Stay', handler: reject },
+  //         { text: 'Leave', role: 'cancel', handler: resolve }
+  //       ]
+  //     });
+
+  //     await alert.present();
+  //   });
+  // }
+}
+
+------------------------
+
+File: app/pages/tabs-page/tabs-page-routing.module.ts
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { TabsPage } from './tabs-page';
+import { SchedulePage } from '../schedule/schedule';
+
+
+const routes: Routes = [
+  {
+    path: 'tabs',
+    component: TabsPage,
+    children: [
+      {
+        path: 'schedule',
+        children: [
+          {
+            path: '',
+            component: SchedulePage,
+          },
+          {
+            path: 'session/:sessionId',
+            loadChildren: () => import('../session-detail/session-detail.module').then(m => m.SessionDetailModule)
+          }
+        ]
+      },
+      {
+        path: 'speakers',
+        children: [
+          {
+            path: '',
+            loadChildren: () => import('../speaker-list/speaker-list.module').then(m => m.SpeakerListModule)
+          },
+          {
+            path: 'session/:sessionId',
+            loadChildren: () => import('../session-detail/session-detail.module').then(m => m.SessionDetailModule)
+          },
+          {
+            path: 'speaker-details/:speakerId',
+            loadChildren: () => import('../speaker-detail/speaker-detail.module').then(m => m.SpeakerDetailModule)
+          }
+        ]
+      },
+      {
+        path: 'map',
+        children: [
+          {
+            path: '',
+            loadChildren: () => import('../map/map.module').then(m => m.MapModule)
+          }
+        ]
+      },
+      {
+        path: 'about',
+        children: [
+          {
+            path: '',
+            loadChildren: () => import('../about/about.module').then(m => m.AboutModule)
+          }
+        ]
+      },
+      {
+        path: '',
+        redirectTo: '/app/tabs/schedule',
+        pathMatch: 'full'
+      }
+    ]
+  }
+];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
+})
+export class TabsPageRoutingModule { }
+
+
+------------------------
+
+File: app/pages/tabs-page/tabs-page.html
+<ion-tabs>
+
+  <ion-tab-bar slot="bottom">
+    <ion-tab-button tab="schedule">
+      <ion-icon name="calendar"></ion-icon>
+      <ion-label>Schedule</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="speakers">
+      <ion-icon name="people"></ion-icon>
+      <ion-label>Faculty</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="map">
+      <ion-icon name="location"></ion-icon>
+      <ion-label>Map</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="about">
+      <ion-icon name="information-circle"></ion-icon>
+      <ion-label>About</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+
+</ion-tabs>
+
+------------------------
+
+File: app/pages/tabs-page/tabs-page.module.ts
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
+
+import { TabsPage } from './tabs-page';
+import { TabsPageRoutingModule } from './tabs-page-routing.module';
+
+import { AboutModule } from '../about/about.module';
+import { MapModule } from '../map/map.module';
+import { ScheduleModule } from '../schedule/schedule.module';
+import { SessionDetailModule } from '../session-detail/session-detail.module';
+import { SpeakerDetailModule } from '../speaker-detail/speaker-detail.module';
+import { SpeakerListModule } from '../speaker-list/speaker-list.module';
+
+@NgModule({
+  imports: [
+    AboutModule,
+    CommonModule,
+    IonicModule,
+    MapModule,
+    ScheduleModule,
+    SessionDetailModule,
+    SpeakerDetailModule,
+    SpeakerListModule,
+    TabsPageRoutingModule
+  ],
+  declarations: [
+    TabsPage,
+  ]
+})
+export class TabsModule { }
+
+------------------------
+
+File: app/pages/tabs-page/tabs-page.scss
+.tabbar {
+  justify-content: center;
+}
+
+.tab-button {
+  max-width: 200px;
+}
+------------------------
+
+File: app/pages/tabs-page/tabs-page.spec.ts
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { TestBed, waitForAsync } from '@angular/core/testing';
+
+import { TabsPage } from './tabs-page';
+
+describe('TabsPage', () => {
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [TabsPage],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    }).compileComponents();
+  }));
+
+  it('should create the tabs page', () => {
+    const fixture = TestBed.createComponent(TabsPage);
+    const app = fixture.debugElement.componentInstance;
+    expect(app).toBeTruthy();
+  });
+});
+
+------------------------
+
+File: app/pages/tabs-page/tabs-page.ts
+import { Component } from '@angular/core';
+
+@Component({
+  templateUrl: 'tabs-page.html'
+})
+export class TabsPage {}
+
+------------------------
+
+File: app/pages/tutorial/tutorial-routing.module.ts
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
+import { TutorialPage } from './tutorial';
+
+const routes: Routes = [
+  {
+    path: '',
+    component: TutorialPage
+  }
+];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
+})
+export class TutorialPageRoutingModule { }
+
+------------------------
+
+File: app/pages/tutorial/tutorial.html
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <b><p style="margin-left: 0px">Made with 💗 by Atharva Shah</p></b>
+    <ion-buttons slot="end">
+      <ion-button color='primary' (click)="startApp()" [hidden]="!showSkip">Skip</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true">
+  <div class="slide-container">
+    <section class="slide">
+      <img src="assets/img/ica-slidebox-img-1.png" class="slide-image" />
+      <h2 class="slide-title">
+        Welcome to
+        <b>SPIT APP</b>
+      </h2>
+      <p>
+        <b>Sardar Patel Institute of Technology</b>, officially Bharatiya Vidya Bhavans Sardar Patel Institute of Technology, is an autonomous un-aided Engineering Institute affiliated to University of Mumbai.
+
+      </p>
+    </section>
+
+    <section class="slide">
+      <img src="assets/img/ica-slidebox-img-2.png" class="slide-image" />
+      <h2 class="slide-title">App Features</h2>
+      <p>
+        <b>View your schedule</b>, see faculty list, get a list of all departments, info about college and make a productive time table. Also includes dark mode theme along with left sidebar and bottom tabs. Made with Ionic and Angular.
+      </p>
+    </section>
+
+    <section class="slide">
+      <img src="assets/img/ica-slidebox-img-3.png" class="slide-image" />
+      <h2 class="slide-title">Virtual Tour of SPIT</h2>
+      <p>
+        <b>Virtual Tour</b> Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil odit impedit laboriosam quos ea doloremque quam earum dolores, tempore repudiandae corporis, tempora eaque illum nemo consequuntur minima nesciunt facilis. Impedit.
+      </p>
+    </section>
+
+    <section class="slide">
+      <img src="assets/img/ica-slidebox-img-4.png" class="slide-image" />
+      <h2 class="slide-title">Ready to Start?</h2>
+      <ion-button fill="clear" (click)="startApp()">
+        Continue
+        <ion-icon slot="end" name="arrow-forward"></ion-icon>
+      </ion-button>
+    </section>
+  </div>
+</ion-content>
+
+------------------------
+
+File: app/pages/tutorial/tutorial.module.ts
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
+
+import { TutorialPage } from './tutorial';
+import { TutorialPageRoutingModule } from './tutorial-routing.module';
+
+@NgModule({
+    imports: [
+        CommonModule,
+        IonicModule,
+        TutorialPageRoutingModule,
+    ],
+    declarations: [TutorialPage]
+})
+export class TutorialModule {}
+
+------------------------
+
+File: app/pages/tutorial/tutorial.scss
+ion-toolbar {
+  --background: transparent;
+}
+
+ion-content {
+  --overflow: hidden;
+}
+
+.slide-container {
+  display: grid;
+  grid-template-columns: repeat(4, 100%);
+  grid-template-rows: 1fr;
+
+  height: 100%;
+
+  overflow: scroll;
+  scroll-snap-type: x mandatory;
+}
+
+.slide {
+  display: flex;
+
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+
+  text-align: center;
+
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+
+.slide-title {
+  margin-top: 2.8rem;
+}
+
+.slide-image {
+  max-width: 80%;
+  max-height: 50%;
+
+  margin: -5vh 0 0;
+  pointer-events: none;
+}
+
+b {
+  font-weight: 500;
+}
+
+p {
+  padding: 0 40px;
+
+  color: var(--ion-color-step-600, #60646b);
+
+  font-size: 14px;
+
+  line-height: 1.5;
+
+  b {
+    color: var(--ion-text-color, #000000);
+  }
+}
+
+------------------------
+
+File: app/pages/tutorial/tutorial.spec.ts
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Router } from '@angular/router';
+import { TestBed, waitForAsync } from '@angular/core/testing';
+import { MenuController } from '@ionic/angular';
+
+import { TutorialPage } from './tutorial';
+
+import { IonicStorageModule } from '@ionic/storage-angular';
+describe('TutorialPage', () => {
+  let fixture, app;
+  beforeEach(waitForAsync(() => {
+    const menuSpy = jasmine.createSpyObj('MenuController', [
+      'toggle',
+      'enable'
+    ]);
+    const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl']);
+
+    TestBed.configureTestingModule({
+      declarations: [TutorialPage],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [IonicStorageModule.forRoot()],
+      providers: [
+        { provide: MenuController, useValue: menuSpy },
+        { provide: Router, useValue: routerSpy }
+      ]
+    }).compileComponents();
+  }));
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(TutorialPage);
+    app = fixture.debugElement.componentInstance;
+    app.storage.create();
+  });
+  it('should create the tutorial page', () => {
+    expect(app).toBeTruthy();
+  });
+
+  it('should check the tutorial status', async () => {
+    const didTuts = await app.storage.get('ion_did_tutorial');
+    expect(didTuts).toBeFalsy();
+  });
+});
+
+------------------------
+
+File: app/pages/tutorial/tutorial.ts
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+
+import { MenuController } from '@ionic/angular';
+
+import { Storage } from '@ionic/storage-angular';
+
+@Component({
+  selector: 'page-tutorial',
+  templateUrl: 'tutorial.html',
+  styleUrls: ['./tutorial.scss'],
+})
+export class TutorialPage {
+  showSkip = true;
+
+  constructor(
+    public menu: MenuController,
+    public router: Router,
+    public storage: Storage,
+  ) {}
+
+  startApp() {
+    this.router
+      .navigateByUrl('/app/tabs/schedule', { replaceUrl: true })
+      .then(() => this.storage.set('ion_did_tutorial', true));
+  }
+
+  ionViewWillEnter() {
+    this.storage.get('ion_did_tutorial').then(res => {
+      if (res === true) {
+        this.router.navigateByUrl('/app/tabs/schedule', { replaceUrl: true });
+      }
+    });
+
+    this.menu.enable(false);
+  }
+
+  ionViewDidLeave() {
+    // enable the root left menu when leaving the tutorial page
+    this.menu.enable(true);
+  }
+}
+
+------------------------
+
+File: app/providers/check-tutorial.guard.ts
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { Storage } from '@ionic/storage-angular';
+import { from, map, tap } from 'rxjs';
+
+export const checkTutorialGuard = () => {
+  const storage = inject(Storage);
+  const router = inject(Router);
+
+  return from(storage.get('ion_did_tutorial'))
+    .pipe(
+      tap(didTutorial => {
+        if (didTutorial === true) {
+          router.navigate(['/app', 'tabs', 'schedule']);
+        }
+      }),
+      map(didTutorial => !didTutorial)
+    );
+}
+
+------------------------
+
+File: app/providers/conference-data.ts
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { of } from 'rxjs';
+import { map } from 'rxjs/operators';
+
+import { UserData } from './user-data';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ConferenceData {
+  data: any;
+
+  constructor(public http: HttpClient, public user: UserData) {}
+
+  load(): any {
+    if (this.data) {
+      return of(this.data);
+    } else {
+      return this.http
+        .get('assets/data/data.json')
+        .pipe(map(this.processData, this));
+    }
+  }
+
+  processData(data: any) {
+    // just some good 'ol JS fun with objects and arrays
+    // build up the data by linking speakers to sessions
+    this.data = data;
+
+    // loop through each day in the schedule
+    this.data.schedule.forEach((day: any) => {
+      // loop through each timeline group in the day
+      day.groups.forEach((group: any) => {
+        // loop through each session in the timeline group
+        group.sessions.forEach((session: any) => {
+          session.speakers = [];
+          if (session.speakerNames) {
+            session.speakerNames.forEach((speakerName: any) => {
+              const speaker = this.data.speakers.find(
+                (s: any) => s.name === speakerName
+              );
+              if (speaker) {
+                session.speakers.push(speaker);
+                speaker.sessions = speaker.sessions || [];
+                speaker.sessions.push(session);
+              }
+            });
+          }
+        });
+      });
+    });
+
+    return this.data;
+  }
+
+  getTimeline(
+    dayIndex: number,
+    queryText = '',
+    excludeTracks: any[] = [],
+    segment = 'all'
+  ) {
+    return this.load().pipe(
+      map((data: any) => {
+        const day = data.schedule[dayIndex];
+        day.shownSessions = 0;
+
+        queryText = queryText.toLowerCase().replace(/,|\.|-/g, ' ');
+        const queryWords = queryText.split(' ').filter(w => !!w.trim().length);
+
+        day.groups.forEach((group: any) => {
+          group.hide = true;
+
+          group.sessions.forEach((session: any) => {
+            // check if this session should show or not
+            this.filterSession(session, queryWords, excludeTracks, segment);
+
+            if (!session.hide) {
+              // if this session is not hidden then this group should show
+              group.hide = false;
+              day.shownSessions++;
+            }
+          });
+        });
+
+        return day;
+      })
+    );
+  }
+
+  filterSession(
+    session: any,
+    queryWords: string[],
+    excludeTracks: any[],
+    segment: string
+  ) {
+    let matchesQueryText = false;
+    if (queryWords.length) {
+      // of any query word is in the session name than it passes the query test
+      queryWords.forEach((queryWord: string) => {
+        if (session.name.toLowerCase().indexOf(queryWord) > -1) {
+          matchesQueryText = true;
+        }
+      });
+    } else {
+      // if there are no query words then this session passes the query test
+      matchesQueryText = true;
+    }
+
+    // if any of the sessions tracks are not in the
+    // exclude tracks then this session passes the track test
+    let matchesTracks = false;
+    session.tracks.forEach((trackName: string) => {
+      if (excludeTracks.indexOf(trackName) === -1) {
+        matchesTracks = true;
+      }
+    });
+
+    // if the segment is 'favorites', but session is not a user favorite
+    // then this session does not pass the segment test
+    let matchesSegment = false;
+    if (segment === 'favorites') {
+      if (this.user.hasFavorite(session.name)) {
+        matchesSegment = true;
+      }
+    } else {
+      matchesSegment = true;
+    }
+
+    // all tests must be true if it should not be hidden
+    session.hide = !(matchesQueryText && matchesTracks && matchesSegment);
+  }
+
+  getSpeakers() {
+    return this.load().pipe(
+      map((data: any) => {
+        return data.speakers.sort((a: any, b: any) => {
+          const aName = a.name.split(' ').pop();
+          const bName = b.name.split(' ').pop();
+          return aName.localeCompare(bName);
+        });
+      })
+    );
+  }
+
+  getTracks() {
+    return this.load().pipe(
+      map((data: any) => {
+        return data.tracks.sort();
+      })
+    );
+  }
+
+  getMap() {
+    return this.load().pipe(
+      map((data: any) => {
+        return data.map;
+      })
+    );
+  }
+}
+
+------------------------
+
+File: app/providers/user-data.ts
+import { Injectable } from '@angular/core';
+import { Storage } from '@ionic/storage-angular';
+
+
+@Injectable({
+  providedIn: 'root'
+})
+export class UserData {
+  favorites: string[] = [];
+  HAS_LOGGED_IN = 'hasLoggedIn';
+  HAS_SEEN_TUTORIAL = 'hasSeenTutorial';
+
+  constructor(
+    public storage: Storage
+  ) { }
+
+  hasFavorite(sessionName: string): boolean {
+    return (this.favorites.indexOf(sessionName) > -1);
+  }
+
+  addFavorite(sessionName: string): void {
+    this.favorites.push(sessionName);
+  }
+
+  removeFavorite(sessionName: string): void {
+    const index = this.favorites.indexOf(sessionName);
+    if (index > -1) {
+      this.favorites.splice(index, 1);
+    }
+  }
+
+  login(username: string): Promise<any> {
+    return this.storage.set(this.HAS_LOGGED_IN, true).then(() => {
+      this.setUsername(username);
+      return window.dispatchEvent(new CustomEvent('user:login'));
+    });
+  }
+
+  signup(username: string): Promise<any> {
+    return this.storage.set(this.HAS_LOGGED_IN, true).then(() => {
+      this.setUsername(username);
+      return window.dispatchEvent(new CustomEvent('user:signup'));
+    });
+  }
+
+  logout(): Promise<any> {
+    return this.storage.remove(this.HAS_LOGGED_IN).then(() => {
+      return this.storage.remove('username');
+    }).then(() => {
+      window.dispatchEvent(new CustomEvent('user:logout'));
+    });
+  }
+
+  setUsername(username: string): Promise<any> {
+    return this.storage.set('username', username);
+  }
+
+  getUsername(): Promise<string> {
+    return this.storage.get('username').then((value) => {
+      return value;
+    });
+  }
+
+  isLoggedIn(): Promise<boolean> {
+    return this.storage.get(this.HAS_LOGGED_IN).then((value) => {
+      return value === true;
+    });
+  }
+
+  checkHasSeenTutorial(): Promise<string> {
+    return this.storage.get(this.HAS_SEEN_TUTORIAL).then((value) => {
+      return value;
+    });
+  }
+}
+
+------------------------
+

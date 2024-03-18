@@ -1,0 +1,49 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <b><p style="margin-left: 0px">Made with 💗 by Atharva Shah</p></b>
+    <ion-buttons slot="end">
+      <ion-button color='primary' (click)="startApp()" [hidden]="!showSkip">Skip</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true">
+  <div class="slide-container">
+    <section class="slide">
+      <img src="assets/img/ica-slidebox-img-1.png" class="slide-image" />
+      <h2 class="slide-title">
+        Welcome to
+        <b>SPIT APP</b>
+      </h2>
+      <p>
+        <b>Sardar Patel Institute of Technology</b>, officially Bharatiya Vidya Bhavans Sardar Patel Institute of Technology, is an autonomous un-aided Engineering Institute affiliated to University of Mumbai.
+
+      </p>
+    </section>
+
+    <section class="slide">
+      <img src="assets/img/ica-slidebox-img-2.png" class="slide-image" />
+      <h2 class="slide-title">App Features</h2>
+      <p>
+        <b>View your schedule</b>, see faculty list, get a list of all departments, info about college and make a productive time table. Also includes dark mode theme along with left sidebar and bottom tabs. Made with Ionic and Angular.
+      </p>
+    </section>
+
+    <section class="slide">
+      <img src="assets/img/ica-slidebox-img-3.png" class="slide-image" />
+      <h2 class="slide-title">Virtual Tour of SPIT</h2>
+      <p>
+        <b>Virtual Tour</b> Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil odit impedit laboriosam quos ea doloremque quam earum dolores, tempore repudiandae corporis, tempora eaque illum nemo consequuntur minima nesciunt facilis. Impedit.
+      </p>
+    </section>
+
+    <section class="slide">
+      <img src="assets/img/ica-slidebox-img-4.png" class="slide-image" />
+      <h2 class="slide-title">Ready to Start?</h2>
+      <ion-button fill="clear" (click)="startApp()">
+        Continue
+        <ion-icon slot="end" name="arrow-forward"></ion-icon>
+      </ion-button>
+    </section>
+  </div>
+</ion-content>

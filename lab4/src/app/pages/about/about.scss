@@ -1,0 +1,50 @@
+.custom-content {
+  background-color: #f0f0f0;
+}
+
+.custom-header {
+  background-color: #007bff;
+  color: #fff;
+  padding: 20px;
+}
+
+.custom-info {
+  padding: 20px;
+}
+
+.custom-info h3 {
+  color: #007bff;
+  margin-bottom: 10px;
+}
+
+.custom-info p {
+  margin-bottom: 20px;
+}
+
+.custom-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.custom-grid img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.about-image-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.about-image {
+  width: calc(25% - 10px); /* Adjust as needed */
+  height: auto;
+  border-radius: 8px;
+}
+
+/* Adjust ion-item padding */
+ion-item {
+  --padding-start: 0;
+  --padding-end: 0;
+}
